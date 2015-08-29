@@ -90,7 +90,7 @@
     "attendance_and_behavior": "Attendance & Behavior",
     "program_participation": "Program Participation",
     "transcript": "Transcript",
-    "attendance_dates": "Attendance Dates",
+    "attendance_dates": "",
     "LM": "M",
     "LT": "T",
     "LW": "W",
@@ -110,7 +110,7 @@
     "edit_tag": "Edit Cohort",
     "tags": "Cohorts",
     "action": "Action",
-    "actions": "ACTIONS",
+    "actions": "Actions",
     "assigned_students": "Assigned Students",
     "role": "Role",
     "admin": "Admin",
@@ -151,7 +151,7 @@
     "credits": "Credits",
     "elective_credits": "Elective Credits",
     "language_credits": "Language Credits",
-    "physical_education": "Pyhsical Education",
+    "physical_education": "Physical Education",
     "attempted_credits": "Attempted Credits",
 
     "personal": "Personal",
@@ -165,8 +165,8 @@
     "see_school": "See Enrollment",
     "history": "History",
     "case": "Assigned",
-    "success_logout": "Successful Logout",
+    "success_logout": "Logout Successful",
     "password_not_match": "Password does not match",
-    "program_participation_error_message": "This Student haven't participated in any program yet",
-    "attendance_and_behavior_error_message": "This Student is not linked yet to school data"
+    "program_participation_error_message": "This student has not participated in a program yet",
+    "attendance_and_behavior_error_message": "This student's school data has not been linked yet"
 }
