@@ -343,7 +343,7 @@
                             </div>
 
                         </li>
-                        <li class="ctype-{{ $index+1 }} uppercase" ng-repeat="(subjectName, subjectValue) in transcripts.subject track by $index">{{ subjectValue }}
+                        <li class="ctype-{{ $index+1 }} tc-{{total_data}}-col  uppercase" ng-repeat="(subjectName, subjectValue) in transcripts.subject track by $index">{{ subjectValue }}
                             <br/>{{ subjectName }} {{ 'general.credits' | i18n }}</li>
                     </ul>
                     <hr class="separator-transcript">
@@ -360,8 +360,8 @@
                                     <br/>
                                     <b>{{ 'general.grade_level' | i18n }}</b> {{ transDetail.gradeLevel }}
                                 </li>
-                                <li class="transcript-content" ng-repeat="(courseName, course) in transDetail.transcripts">
-                                    <div class="transcript-descriptor" ng-if="course === null">
+                                <li class="transcript-content tcontent-{{total_data}}-col" ng-repeat="(courseName, course) in transDetail.transcripts">
+                                    <div class="transcript-descriptor" ng-if="course === null                                        ">
 
                                     </div>
                                     <div class="transcript-display" ng-if="course === null">

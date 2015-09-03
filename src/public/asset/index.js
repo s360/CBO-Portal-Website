@@ -282,7 +282,7 @@ app.config(function ($routeProvider) {
 });
 
 app.run(['$window', '$rootScope', '$route',
-function ($window, $rootScope, locale) {
+function ($window, $rootScope, locale,$location) {
         $rootScope.goBack = function () {
             $window.history.back();
         };
@@ -299,7 +299,7 @@ function ($window, $rootScope, locale) {
 }]);
 
 
-app.run(function ($rootScope, $http, $location, $window, AuthenticationService, CookieStore, locale) {
+app.run(function ($cookieStore,$rootScope, $http, $location, $window, AuthenticationService, CookieStore, locale) {
 
     var returnData = CookieStore.getData();
     locale.ready('general').then(function () {
@@ -312,7 +312,9 @@ app.run(function ($rootScope, $http, $location, $window, AuthenticationService, 
 
     $rootScope.$on("$routeChangeStart", function (event, nextRoute) {
         //redirect only if both isAuthenticated is false and no token is set
+
         if (nextRoute != null && nextRoute.access != null && nextRoute.access.requiredAuthentication && !AuthenticationService.isAuthenticated && !$window.sessionStorage.token) {
+
             $location.path("/login");
             $rootScope.showNavBar = false;
         }
@@ -322,11 +324,15 @@ app.run(function ($rootScope, $http, $location, $window, AuthenticationService, 
             event.preventDefault();
         }
 
-        if($location.$$absUrl != 'http://localhost/cbo_website/src/public/#/login'){
-            localStorage.setItem('url', $location.$$absUrl);
-        }
+            if($location.$$path != '/login'){
+                $cookieStore.put('intended_url', $location.$$path);
+                console.log($cookieStore.get('intended_url'));
+            }
+
+
 
         if (returnData) {
+
             start_time_idle();
         }
         if($location.$$path == '/login'){
@@ -469,6 +475,7 @@ app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 
             $rootScope.show_footer = true;
         }
 
+        var requested_url = $location.$$path;
 
         $rootScope.full_screen = false;
         $rootScope.organization_name = CookieStore.get('cboAdmin_cookie_organization_name');
@@ -1097,6 +1104,7 @@ app.controller('StudentDetailController', ['$route','$rootScope', '$scope', '$ro
                             $scope.academicInfo.languageSpokenAtHome = _.get(response, 'languages.language[1].code') || 'N/A';
                             $scope.academicInfo.currentSchool = _.get(response, 'enrollment.school.schoolName') || 'N/A';
                             $scope.transcripts = response.transcripts || {};
+                            $scope.total_data = _.size(response.transcripts.subject);
 
                             //if($scope.transcripts.details){
                             //    var details = [];
@@ -3102,8 +3110,8 @@ app.controller('HeartbeatController', ['$rootScope', '$scope',
     }
 ]);
 
-app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
+app.controller('LoginController', ['$cookieStore','$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
+    function ($cookieStore,$rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
 
         stop_time_idle();
 
@@ -3223,8 +3231,12 @@ app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location',
 
                                             }
                                             start_time_idle();
-                                             $location.path('/');
-
+                                           if($cookieStore.get('url')!= 'undefined'){
+                                                $location.path('/');
+                                            }else if($cookieStore.get('url')!= 'undefined' || $cookieStore.get('url')!='' || $cookieStore.get('url')!=null){
+                                               $location.path($cookieStore.get('url'));
+                                               console.log($cookieStore.get('url'));
+                                           }
 
                                         } else {
                                             showError(response.error.message, 1);

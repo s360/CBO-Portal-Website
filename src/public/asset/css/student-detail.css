@@ -589,7 +589,7 @@ ul li.transcript-content:nth-child(7) {
     padding-top: 5px;
     padding-left: 10px;
     padding-bottom: 30px;
-    width: 94%;
+    width: 96%;
 }
 @media (max-width: 1280px) {
     ul.transcript li:nth-child(2) {
@@ -714,7 +714,7 @@ ul li.transcript-content:nth-child(7) {
     padding-top: 5px;
     padding-left: 10px;
     padding-bottom: 30px;
-    width: 94%;
+    width: 96%;
 }
     .transcript-display {
         margin-bottom: 35px;
@@ -910,3 +910,291 @@ ul.cohorts {
 .ctype-font-21 { color: #4EC6DE; }
 .ctype-font-22 { color: #EE6423; }
 .ctype-font-23 { color: #FFFFFF; }
+
+.tc-1-col{
+    width: 84%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-2-col{
+    width: 42%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-3-col{
+    width: 28%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-4-col{
+    width: 21%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-5-col{
+    width: 16.8%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-6-col{
+    width: 14%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-7-col{
+    width: 12%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-8-col{
+    width: 10.5%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-9-col{
+    width: 9.3333%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-10-col{
+    width: 8.4%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-11-col{
+    width: 7.6363%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-12-col{
+    width: 7%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-13-col{
+    width: 6.4615%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-14-col{
+    width: 6%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-15-col{
+    width: 5.6%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-16-col{
+    width: 5.25%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-17-col{
+    width: 4.9411%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-18-col{
+    width: 4.6666%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-19-col{
+    width: 4.4210%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-20-col{
+    width: 4.2222%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-21-col{
+    width: 4%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+.tc-22-col{
+    width: 3.8181%!important;
+    font-size: 14px!important;
+    font-weight: bold!important;
+    color: white!important;
+    letter-spacing: 1px!important;
+    padding-top: 2%!important;
+}
+
+.tcontent-1-col{
+    width: 84%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-2-col{
+    width: 42%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-3-col{
+    width: 28%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-4-col{
+    width: 21%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-5-col{
+    width: 16.8%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-6-col{
+    width: 14%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-7-col{
+    width: 12%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-8-col{
+    width: 10.5%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-9-col{
+    width: 9.3333%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-10-col{
+    width: 8.4%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-11-col{
+    width: 7.6363%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-12-col{
+    width: 7%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-13-col{
+    width: 6.4615%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-14-col{
+    width: 6%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-15-col{
+    width: 5.6%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-16-col{
+    width: 5.25%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-17-col{
+    width: 4.9411%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-18-col{
+    width: 4.6666%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-19-col{
+    width: 4.4210%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-20-col{
+    width: 4.2222%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-21-col{
+    width: 4%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
+.tcontent-22-col{
+    width: 3.8181%!important;
+    padding-top: 0!important;
+    padding-left:0!important;
+}
