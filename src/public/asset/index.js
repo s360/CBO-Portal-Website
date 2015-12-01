@@ -1,16 +1,33 @@
 'use strict';
 
-var auth_url = "https://auth.cbo.upward.st/api/";
-var api_url = "https://api.cbo.upward.st/";
+var is_logged_in = false;
 
-var globalConfig = {
-    client_id: 'cbo_client_demo',
-    client_secret: '7e98a24f4fe91535348f6e87cde866dca9134b50fc029abefdc7278369f2',
-    response_type: 'code',
-    grant_type: 'password'
-};
+var __i = false; if(typeof __local !== 'undefined') __i = __local;
 
-var app = angular.module('CboPortal', ['ngRoute', 'ngCookies', 'ngPrettyJson', 'ui.date']);
+var global_redirect_url = '/';
+
+var app = angular.module('CboPortal', ['ui.bootstrap','ui.router','ngLocationUpdate','ngRoute', 'ngCookies', 'ngPrettyJson', 'ui.date', 'anguFixedHeaderTable', 'scrollable-table', 'ngLocalize', 'ui.codemirror',
+    'ngLocalize.Config'
+]).value('localeConf', {
+    basePath: 'languages',
+    defaultLocale: 'en-US',
+    sharedDictionary: 'general',
+    fileExtension: '.lang.json',
+    persistSelection: true,
+    cookieName: 'COOKIE_LOCALE_LANG_',
+    observableAttrs: new RegExp('^data-(?!ng-|i18n)'),
+    delimiter: '::'
+});
+
+app.factory('headerInjector', [function (SessionService) {
+    var headerInjector = {
+        request: function (config) {
+            config.headers['X-Cbo-Client-Url'] = __local;
+            return config;
+        }
+    };
+    return headerInjector;
+}]);
 
 app.config(['$httpProvider', function ($httpProvider) {
     //Reset headers to avoid OPTIONS request (aka preflight)
@@ -21,1629 +38,406 @@ app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.patch = {};
     $httpProvider.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
     $httpProvider.defaults.headers.common['Accept'] = '*/*';
+    if (__i) $httpProvider.interceptors.push('headerInjector');
+    $httpProvider.defaults.timeout = 15000;
 
 }]);
 
-app.config(function ($routeProvider) {
+app.run(['$window', '$rootScope', '$route',
+function ($window, $rootScope, locale) {
+        $rootScope.goBack = function () {
+            $window.history.back();
+        };
+        $rootScope.data_content = "asset/templates/desktop.html";
+        var element = angular.element("#login-container");
+        if ($window.innerWidth > 767) {
+            $rootScope.loginClass = "col-md-offset-4 col-md-4 login-page";
+            $rootScope.data_content = "asset/templates/desktop.html";
+        } else if ($window.innerWidth < 767) {
+            $rootScope.loginClass = "col-md-offset-4 col-md-4 login-page-mobile";
+            $rootScope.data_content = "asset/templates/mobile.html";
+        }
 
-    $routeProvider.
-        when('/', {
-            templateUrl: 'asset/templates/student/list.html',
-            controller: 'StudentController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/student/add', {
-            templateUrl: 'asset/templates/student/add.html',
-            controller: 'StudentAddController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/student/backpacks/:student_id', {
-            templateUrl: 'asset/templates/student/backpacks.html',
-            controller: 'StudentBackpackController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/student/detail/:student_id', {
-            templateUrl: 'asset/templates/student/detail.html',
-            controller: 'StudentDetailController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/student/edit/:student_id', {
-            templateUrl: 'asset/templates/student/edit.html',
-            controller: 'StudentEditController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/student/programs/:student_id/add', {
-            templateUrl: 'asset/templates/student/program_add.html',
-            controller: 'StudentProgramAddController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/student/programs/:student_id', {
-            templateUrl: 'asset/templates/student/program_list.html',
-            controller: 'StudentProgramController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/student', {
-            templateUrl: 'asset/templates/student/list.html',
-            controller: 'StudentController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/profile/edit', {
-            templateUrl: 'asset/templates/profile/edit.html',
-            controller: 'ProfileEditController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/profile', {
-            templateUrl: 'asset/templates/profile/detail.html',
-            controller: 'ProfileController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/program/add', {
-            templateUrl: 'asset/templates/program/add.html',
-            controller: 'ProgramAddController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/program/detail/:program_id', {
-            templateUrl: 'asset/templates/program/detail.html',
-            controller: 'ProgramDetailController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/program/edit/:program_id', {
-            templateUrl: 'asset/templates/program/edit.html',
-            controller: 'ProgramEditController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/program/students/:program_id/add', {
-            templateUrl: 'asset/templates/program/student_add.html',
-            controller: 'ProgramStudentAddController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/program/students/:program_id', {
-            templateUrl: 'asset/templates/program/student_list.html',
-            controller: 'ProgramStudentController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/program', {
-            templateUrl: 'asset/templates/program/list.html',
-            controller: 'ProgramController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/user/invite', {
-            templateUrl: 'asset/templates/user/invite.html',
-            controller: 'UserInviteController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/user/detail/:user_id', {
-            templateUrl: 'asset/templates/user/detail.html',
-            controller: 'UserDetailController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/user', {
-            templateUrl: 'asset/templates/user/list.html',
-            controller: 'UserController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/heartbeat', {
-            templateUrl: 'asset/templates/heartbeat/list.html',
-            controller: 'HeartbeatController',
-            access: { requiredAuthentication: true }
-        }).
-        when('/login', {
-            templateUrl: 'asset/templates/login.html',
-            controller: 'LoginController'
-        }).
-        when('/forget', {
-            templateUrl: 'asset/templates/forget.html',
-            controller: 'LoginController'
-        }).
-        otherwise({
-            redirectTo: '/'
-        });
-
-});
+}]);
 
 
-app.run(function($rootScope, $http, $location, $window, AuthenticationService, CookieStore) {
 
-    //CookieStore.getData();
+app.run(function ($state, $stateParams,$rootScope, $http, $location, $window, AuthenticationService, CookieStore, locale) {
 
-    $rootScope.$on("$routeChangeStart", function(event, nextRoute) {
+    var returnData = CookieStore.getData();
+    locale.ready('general').then(function () {
+        $rootScope.lang = {
+            you_dont_have_any_permission_page: locale.getString('general.you_dont_have_any_permission_page'),
+            success_logout: locale.getString('general.success_logout'),
+            password_not_match: locale.getString('general.password_not_match')
+        };
+    });
+
+    $rootScope.$on("$routeChangeStart", function (event, nextRoute) {
         //redirect only if both isAuthenticated is false and no token is set
+        $rootScope.doingResolve = true;
+
         if (nextRoute != null && nextRoute.access != null && nextRoute.access.requiredAuthentication && !AuthenticationService.isAuthenticated && !$window.sessionStorage.token) {
             $location.path("/login");
+            $rootScope.showNavBar = false;
         }
+
+        if (nextRoute != null && nextRoute.access != null && nextRoute.access.requiredAdmin && (AuthenticationService.role+'').indexOf('case-worker') !== -1) {
+            showError($rootScope.lang.you_dont_have_any_permission_page, 1);
+            event.preventDefault();
+        }
+
+        if(nextRoute.$$route.originalPath != '/login' && $rootScope.doingResolve == true){
+            $rootScope.showFooter = false;
+
+        }
+
+        if('$$route' in nextRoute){
+            var intended_url = '';
+            if(nextRoute.$$route.originalPath == '/login'){
+                $rootScope.is_logged_in = false;
+            }
+
+            if(nextRoute.$$route.originalPath != '/login' && nextRoute.$$route.originalPath != '/forget'){
+                $rootScope.is_logged_in = true;
+                $rootScope.showFooter = true;
+
+
+                intended_url = _.get(nextRoute.$$route, 'originalPath');
+                if(intended_url == '/program/students/:program_id'){
+                    intended_url = '/program/students/'+ _.get(nextRoute.params,'program_id');
+                }else if(intended_url == '/student/backpacks/:student_id'){
+                    intended_url = '/student/backpacks/'+_.get(nextRoute.params,'student_id');
+                }else if(intended_url == '/student/detail/:student_id'){
+                    intended_url = '/student/detail/'+_.get(nextRoute.params,'student_id');
+                }else if(intended_url == '/student/detail/:student_id/:tab_id'){
+                    intended_url = '/student/detail/'+_.get(nextRoute.params,'student_id')+'/'+_.get(nextRoute.params,'tab_id');
+                }else if(intended_url == '/student/edit/:student_id'){
+                    intended_url = '/student/edit/'+_.get(nextRoute.params,'student_id');
+                }else if(intended_url =='/student/programs/:student_id/add'){
+                    intended_url = '/student/programs/'+_.get(nextRoute.params,'student_id')+'/add';
+                }else if(intended_url =='/student/programs/:student_id'){
+                    intended_url = '/student/programs/'+_.get(nextRoute.params,'student_id');
+                }else if(intended_url =='/program/detail/:program_id'){
+                    intended_url = '/program/detail/'+_.get(nextRoute.params,'program_id');
+                }else if(intended_url =='/program/edit/:program_id'){
+                    intended_url = '/program/edit/'+_.get(nextRoute.params,'program_id');
+                }else if(intended_url =='/program/students/:program_id/add'){
+                    intended_url = '/program/students/'+_.get(nextRoute.params,'program_id')+'/add';
+                }else if(intended_url =='/program/students/:program_id/edit/:student_id'){
+                    intended_url = '/program/students/'+_.get(nextRoute.params,'program_id')+'/edit/'+_.get(nextRoute.params,'student_id');
+                }else if(intended_url =='/program/students/:program_id'){
+                    intended_url = '/program/students/'+_.get(nextRoute.params,'program_id');
+                }else if(intended_url =='/tag/edit/:tag_id'){
+                    intended_url = '/tag/edit/'+_.get(nextRoute.params,'tag_id');
+                }else if(intended_url =='/user/group/:user_id/add'){
+                    intended_url = '/user/group/'+_.get(nextRoute.params,'user_id')+'/add';
+                }else if(intended_url =='/user/group/:user_id'){
+                    intended_url = '/user/group/'+_.get(nextRoute.params,'user_id');
+                }else if(intended_url =='/user/assign/:user_id'){
+                    intended_url = '/user/assign/'+_.get(nextRoute.params,'user_id');
+                }else if(intended_url =='/user/edit/:user_id'){
+                    intended_url = '/user/edit/'+_.get(nextRoute.params,'user_id');
+                }else if(intended_url =='/user/detail/:user_id'){
+                    intended_url = '/user/detail/'+_.get(nextRoute.params,'user_id');
+                }
+
+                localStorage.setItem('intended_url',intended_url);
+            }
+
+        }
+        if (returnData) {
+            start_time_idle();
+        }
+        if($location.$$path == '/login'){
+            $rootScope.showNavBar = false;
+        }
+    });
+    $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState) {
+        $state.previous = fromState;
+        //console.log(fromState);
     });
 });
 
 
-app.factory('AuthenticationService', function()
-{
+app.factory('AuthenticationService', function () {
     var auth = {
         isAuthenticated: false,
         token: null,
+        refresh_token: null,
         organization_id: null,
         redirect_url: null,
         user_id: null,
         email: null,
         name: null,
+        role: null,
         keep_email: false
     };
 
     return auth;
 
 });
-
-app.factory('CookieStore', function ($rootScope, $window, $cookieStore, AuthenticationService)
-{
+/**
+ *
+ */
+app.factory('CookieStore', function ($rootScope, $window, $cookieStore, AuthenticationService) {
+    var prefix = 'cboAdmin_cookie_';
+    var expire_in = null;
     return {
-        put: function(name, value)
-        {
-            //$cookieStore.put(name, value);
+        /**
+         *
+         * @param name
+         * @param value
+         */
+        put: function (name, value) {
+            $cookieStore.put(prefix + name, value);
         },
-        get: function(name)
-        {
-            return $cookieStore.get(name);
+        /**
+         *
+         * @param name
+         * @returns {*|Object}
+         */
+        get: function (name) {
+            return $cookieStore.get(prefix+name);
         },
-        put_remember: function(value)
-        {
-            //$cookieStore.put('cboAdmin_cookie_remember', value);
+        /**
+         *
+         * @param name
+         * @returns {boolean}
+         */
+        has: function(name){
+            return angular.isDefined($cookieStore.get(prefix+name));
         },
-        setData: function(token, organization_id, redirect_url, user_id, email, name) {
-            //$cookieStore.put('cboAdmin_cookie_token', token);
-            //$cookieStore.put('cboAdmin_cookie_organization_id', organization_id);
-            //$cookieStore.put('cboAdmin_cookie_redirect_url', redirect_url);
-            //$cookieStore.put('cboAdmin_cookie_user_id', user_id);
-            //$cookieStore.put('cboAdmin_cookie_email', email);
-            //$cookieStore.put('cboAdmin_cookie_name', name);
+        /**
+         *
+         * @param value
+         */
+        put_remember: function (value) {
+            $cookieStore.put('remember', value);
+        },
+        /**
+         *
+         * @param name
+         */
+        remove: function (name) {
+            $cookieStore.remove(prefix+name);
+        },
+        /**
+         *
+         * @param token
+         * @param refresh_token
+         * @param organization_id
+         * @param redirect_url
+         * @param user_id
+         * @param email
+         * @param name
+         * @param role
+         * @param organization_name
+         * @param expirein
+         */
+        setData: function (token, refresh_token, organization_id, redirect_url, user_id, email, name, role, organization_name, expirein) {
+            if(expirein) expire_in = expirein;
+            this.put('token', token, expirein);
+            this.put('refresh_token', refresh_token);
+            this.put('organization_id', organization_id);
+            this.put('redirect_url', redirect_url);
+            this.put('user_id', user_id);
+            this.put('email', email);
+            this.put('name', name);
+            this.put('role', role);
+            this.put('organization_name', organization_name);
 
             AuthenticationService.isAuthenticated = true;
-            AuthenticationService.token = token;
-            AuthenticationService.organization_id = organization_id;
-            AuthenticationService.redirect_url = redirect_url;
-            AuthenticationService.user_id = user_id;
-            AuthenticationService.email = email;
-            AuthenticationService.name = name;
+            AuthenticationService.token = this.get('token');
+            AuthenticationService.refresh_token = this.get('refresh_token');
+            AuthenticationService.organization_id = this.get('organization_id');
+            AuthenticationService.redirect_url = this.get('redirect_url');
+            AuthenticationService.user_id = this.get('user_id');
+            AuthenticationService.email = this.get('email');
+            AuthenticationService.name = this.get('name');
+            AuthenticationService.role = this.get('role');
+            AuthenticationService.organization_name = this.get('organization_name');
             $rootScope.showNavBar = true;
-            $rootScope.completeName = name;
+            $rootScope.completeName = AuthenticationService.name;
 
         },
-        getData: function() {
-            if( typeof $cookieStore.get('cboAdmin_cookie_token') !== 'undefined' && $cookieStore.get('cboAdmin_cookie_token') && typeof $cookieStore.get('cboAdmin_cookie_organization_id') !== 'undefined' && $cookieStore.get('cboAdmin_cookie_organization_id') )
-            {
+        getData: function () {
+            if (this.has('token') && this.get('token') && this.has('organization_id') && this.get('organization_id')) {
                 AuthenticationService.isAuthenticated = true;
-                AuthenticationService.token = $cookieStore.get('cboAdmin_cookie_token');
-                AuthenticationService.organization_id = $cookieStore.get('cboAdmin_cookie_organization_id');
-                AuthenticationService.redirect_url = $cookieStore.get('cboAdmin_cookie_redirect_url');
-                AuthenticationService.user_id = $cookieStore.get('cboAdmin_cookie_user_id');
-                AuthenticationService.email = $cookieStore.get('cboAdmin_cookie_email');
-                AuthenticationService.name = $cookieStore.get('cboAdmin_cookie_name');
+                AuthenticationService.token = this.get('token');
+                AuthenticationService.refresh_token = this.get('refresh_token');
+                AuthenticationService.organization_id = this.get('organization_id');
+                AuthenticationService.redirect_url = this.get('redirect_url');
+                AuthenticationService.user_id = this.get('user_id');
+                AuthenticationService.email = this.get('email');
+                AuthenticationService.name = this.get('name');
+                AuthenticationService.role = this.get('role');
                 $rootScope.showNavBar = true;
                 $rootScope.completeName = AuthenticationService.name;
                 return true;
-            }
-            else
-            {
-                var remember = $cookieStore.get('cboAdmin_cookie_remember');
-                if(remember == true)
-                {
+            } else {
+                var remember = this.get('remember');
+                if (remember == true) {
 
-                }
-                else
-                {
+                } else {
                     AuthenticationService.email = null;
                 }
 
                 AuthenticationService.isAuthenticated = false;
                 AuthenticationService.token = null;
+                AuthenticationService.refresh_token = null;
                 AuthenticationService.organization_id = null;
                 AuthenticationService.redirect_url = null;
                 AuthenticationService.user_id = null;
                 AuthenticationService.name = null;
+                AuthenticationService.role = null;
                 $rootScope.showNavBar = false;
                 $rootScope.completeName = false;
                 return false;
             }
         },
-        clearData: function() {
+        clearData: function () {
 
-            var remember = $cookieStore.get('cboAdmin_cookie_remember');
-            if(remember == true)
-            {
+            var remember = this.get('remember');
+            if (remember == true) {
 
-            }
-            else
-            {
-                $cookieStore.remove('cboAdmin_cookie_email');
+            } else {
+                this.remove('email');
                 AuthenticationService.email = null;
             }
 
-            $cookieStore.remove('cboAdmin_cookie_token');
-            $cookieStore.remove('cboAdmin_cookie_organization_id');
-            $cookieStore.remove('cboAdmin_cookie_redirect_url');
-            $cookieStore.remove('cboAdmin_cookie_user_id');
-            $cookieStore.remove('cboAdmin_cookie_name');
+            this.remove('token');
+            this.remove('refresh_token');
+            this.remove('organization_id');
+            this.remove('redirect_url');
+            this.remove('user_id');
+            this.remove('name');
+            this.remove('role');
             AuthenticationService.isAuthenticated = false;
             AuthenticationService.token = null;
+            AuthenticationService.refresh_token = null;
             AuthenticationService.organization_id = null;
             AuthenticationService.redirect_url = null;
             AuthenticationService.user_id = null;
             AuthenticationService.name = null;
+            AuthenticationService.role = null;
             $rootScope.showNavBar = false;
             $rootScope.completeName = false;
+
+            stop_time_idle();
+
             return true;
         }
     };
 });
 
-
-
-app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 'CookieStore', 'AuthenticationService',
-    function ($rootScope, $scope, $http, $location, CookieStore, AuthenticationService) {
-
-        $rootScope.full_screen = false;
-        $scope.isActive = function(route) {
-
-            var route_length = route.length;
-            var path = $location.path();
-            var new_path = path.substr(0, route_length);
-            return route === new_path;
-
-        };
-
-        $scope.logoutMe = function() {
-
-            var logout = {
-                token: AuthenticationService.token
-            };
-
-            $http.post( auth_url+'logout', $.param(logout), {
-
-            })
-                .success( function (response) {
-
-                    CookieStore.clearData();
-                    showError('Success Logout', 2);
-                    $location.path("/login");
-
-                })
-                .error( function (response, status) {
-
-                    CookieStore.clearData();
-                    showError('Success Logout', 2);
-                    $location.path("/login");
-
-                });
-
-        };
-
-        $rootScope.doingResolve = true;
-
-    }
-]);
-
-app.controller('HomeController', ['$rootScope', '$scope',
-    function ($rootScope, $scope) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-    }
-]);
-
-
-app.controller('StudentAddController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        $scope.addStudent = function(student)
-        {
-            if(student)
-            {
-                $scope.working = true;
-                $http.post( api_url+AuthenticationService.organization_id+'/students', $.param(student), {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        if(response.success == true)
-                        {
-                            showError(response.message, 2);
-                        }
-                        else
-                        {
-                            showError(response.message, 1);
-                        }
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-    }
-]);
-
-
-app.controller('StudentBackpackController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $scope.student = {};
-
-        var student_id = $routeParams.student_id;
-
-        $http.get( api_url+AuthenticationService.organization_id+'/students/'+student_id+'/backpack', {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.student = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
+app.run(['$route', '$rootScope', '$location', function ($route, $rootScope, $location) {
+    var original = $location.path;
+    $location.path = function (path, reload) {
+        if (reload === false) {
+            var lastRoute = $route.current;
+            var un = $rootScope.$on('$locationChangeSuccess', function () {
+                $route.current = lastRoute;
+                un();
             });
-
-    }
-]);
-
-
-app.controller('StudentEditController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $scope.student = {};
-
-        var student_id = $routeParams.student_id;
-
-        $scope.editStudent = function(student)
-        {
-            if(student)
-            {
-                $scope.working = true;
-                $http.put( api_url+AuthenticationService.organization_id+'/students/'+student_id, $.param(student), {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        if(response.success == true)
-                        {
-                            showError(response.message, 2);
-                        }
-                        else
-                        {
-                            showError(response.message, 1);
-                        }
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-        $http.get( api_url+AuthenticationService.organization_id+'/students/'+student_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.student = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('StudentDetailController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $scope.student = {};
-
-        var student_id = $routeParams.student_id;
-
-        $http.get( api_url+AuthenticationService.organization_id+'/students/'+student_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.student = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('ProfileEditController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        $scope.editProfile = function(user)
-        {
-            if(user)
-            {
-                $scope.working = true;
-                $http.put( api_url+AuthenticationService.organization_id+'/users/'+AuthenticationService.user_id, $.param(user), {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        if(response.success == true)
-                        {
-                            showError(response.message, 2);
-                            var complete_name = '';
-                            if(typeof user.first_name !== 'undefined' && user.first_name)
-                            {
-                                complete_name += user.first_name+' ';
-                            }
-                            if(typeof user.last_name !== 'undefined' && user.last_name)
-                            {
-                                complete_name += user.last_name;
-                            }
-
-                            $rootScope.completeName = complete_name;
-
-                        }
-                        else
-                        {
-                            showError(response.message, 1);
-                        }
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-        $http.get( api_url+AuthenticationService.organization_id+'/users/'+AuthenticationService.user_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.user = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('ProfileController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        $http.get( api_url+AuthenticationService.organization_id+'/users/'+AuthenticationService.user_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.user = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('StudentProgramAddController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        var student_id = $routeParams.student_id;
-
-        $scope.addProgramStudent = function(program)
-        {
-            if(program)
-            {
-                $scope.working = true;
-                $http.post( api_url+AuthenticationService.organization_id+'/students/'+student_id+'/programs', $.param(program), {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        if(response.success == true)
-                        {
-                            showError(response.message, 2);
-                        }
-                        else
-                        {
-                            showError(response.message, 1);
-                        }
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-        $scope.program = {
-            active: true
-        };
-
-        $http.get( api_url+AuthenticationService.organization_id+'/students/'+student_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.student = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-        $http.get( api_url+AuthenticationService.organization_id+'/programs', {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                if(response.success == true && response.total > 0)
-                {
-                    $scope.list_program = response.data;
-                }
-                else
-                {
-                    showError(response.error.message, 1);
-                }
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('StudentProgramController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        var student_id = $routeParams.student_id;
-        var list_program = [];
-
-        $http.get( api_url+AuthenticationService.organization_id+'/students/'+student_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.student = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-        $http.get( api_url+AuthenticationService.organization_id+'/programs', {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                if(response.success == true && response.total > 0)
-                {
-                    list_program = response.data;
-
-                    $http.get( api_url+AuthenticationService.organization_id+'/students/'+student_id+'/programs', {
-                        headers: {
-                            'Authorization': 'Bearer '+AuthenticationService.token
-                        }
-                    })
-                        .success(function(response) {
-
-                            for(var i=0; i<response.data.length; i++)
-                            {
-                                for(var j=0; j<list_program.length; j++)
-                                {
-                                    if(response.data[i].program == list_program[j]._id)
-                                    {
-                                        response.data[i].name = list_program[j].name;
-                                    }
-                                }
-                            }
-
-                            $scope.programs = response.data;
-                            $rootScope.doingResolve = false;
-
-                        })
-                        .error(function(response, status) {
-
-                            showError(response, 1);
-                            $rootScope.doingResolve = false;
-                            if(status == 401)
-                            {
-                                CookieStore.clearData();
-                                $location.path( '/login' );
-                            }
-
-                        });
-
-                }
-                else
-                {
-                    showError(response.error.message, 1);
-                }
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('StudentController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $scope.students = [];
-
-        $scope.deleteStudent = function(id, index)
-        {
-            if(id)
-            {
-                $scope.working = true;
-                $http.delete( api_url+AuthenticationService.organization_id+'/students/'+id, {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        $scope.students.splice(index, 1);
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-        $http.get( api_url+AuthenticationService.organization_id+'/students', {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                if(response.success == true && response.total > 0)
-                {
-                    $scope.students = response.data;
-                }
-                else
-                {
-                    showError(response.error.message, 1);
-                }
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('ProgramAddController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        $scope.addProgram = function(program)
-        {
-            if(program)
-            {
-                program.redirect_url = AuthenticationService.redirect_url;
-
-                $scope.working = true;
-                $http.post( api_url+AuthenticationService.organization_id+'/programs', $.param(program), {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        showError(response.message, 2);
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-    }
-]);
-
-
-app.controller('ProgramDetailController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        var program_id = $routeParams.program_id;
-
-        $http.get( api_url+AuthenticationService.organization_id+'/programs/'+program_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.program = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('ProgramEditController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        var program_id = $routeParams.program_id;
-
-        $scope.editProgram = function(program)
-        {
-            if(program)
-            {
-                program.redirect_url = AuthenticationService.redirect_url;
-
-                $scope.working = true;
-                $http.put( api_url+AuthenticationService.organization_id+'/programs/'+program_id, $.param(program), {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        showError(response.message, 2);
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-        $http.get( api_url+AuthenticationService.organization_id+'/programs/'+program_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.program = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('ProgramStudentAddController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        var program_id = $routeParams.program_id;
-
-        $scope.addProgramStudent = function(program)
-        {
-            if(program)
-            {
-                $scope.working = true;
-                $http.post( api_url+AuthenticationService.organization_id+'/programs/'+program_id+'/students', $.param(program), {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        if(response.success == true)
-                        {
-                            showError(response.message, 2);
-                        }
-                        else
-                        {
-                            showError(response.message, 1);
-                        }
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-        $scope.program = {
-            active: true
-        };
-
-        $http.get( api_url+AuthenticationService.organization_id+'/programs/'+program_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.program = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-        $http.get( api_url+AuthenticationService.organization_id+'/students', {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                if(response.success == true && response.total > 0)
-                {
-                    $scope.list_student = response.data;
-                }
-                else
-                {
-                    showError(response.error.message, 1);
-                }
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('ProgramStudentController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        var program_id = $routeParams.program_id;
-
-        $http.get( api_url+AuthenticationService.organization_id+'/programs/'+program_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.program = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-        $http.get( api_url+AuthenticationService.organization_id+'/programs/'+program_id+'/students', {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                if(response.success == true && response.total > 0)
-                {
-                    $scope.students = response.data;
-                }
-                else
-                {
-                    showError('Data Empty', 1);
-                }
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('ProgramController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $scope.programs = [];
-
-        $scope.deleteProgram = function(id, index)
-        {
-            if(id)
-            {
-                $scope.working = true;
-                $http.delete( api_url+AuthenticationService.organization_id+'/programs/'+id, {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        $scope.programs.splice(index, 1);
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-        $http.get( api_url+AuthenticationService.organization_id+'/programs', {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                if(response.success == true && response.total > 0)
-                {
-                    $scope.programs = response.data;
-                }
-                else
-                {
-                    showError(response.error.message, 1);
-                }
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('UserInviteController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        $scope.inviteUser = function(user)
-        {
-            if(user)
-            {
-                user.redirect_url = AuthenticationService.redirect_url;
-
-                $scope.working = true;
-                $http.post( auth_url+'/user/invite', $.param(user), {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        if(response.status == true)
-                        {
-                            showError(response.message, 2);
-                        }
-                        else
-                        {
-                            showError(response.message, 1);
-                        }
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-    }
-]);
-
-
-app.controller('UserDetailController', ['$rootScope', '$scope', '$routeParams', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $routeParams, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-        var user_id = $routeParams.user_id;
-
-        $http.get( api_url+AuthenticationService.organization_id+'/users/'+user_id, {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                $scope.user = response;
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-
-app.controller('UserController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = false;
-        $scope.users = [];
-
-        $scope.deleteUser = function(id, index)
-        {
-            if(id)
-            {
-                $scope.working = true;
-                $http.delete( api_url+AuthenticationService.organization_id+'/users/'+id, {
-                    headers: {
-                        'Authorization': 'Bearer '+AuthenticationService.token
-                    }
-                })
-                    .success(function(response) {
-
-                        $scope.users.splice(index, 1);
-                        $scope.working = false;
-
-                    })
-                    .error(function(response, status) {
-
-                        showError(response, 1);
-                        $scope.working = false;
-                        if(status == 401)
-                        {
-                            CookieStore.clearData();
-                            $location.path( '/login' );
-                        }
-
-                    });
-            }
-        };
-
-        $http.get( api_url+AuthenticationService.organization_id+'/users', {
-            headers: {
-                'Authorization': 'Bearer '+AuthenticationService.token
-            }
-        })
-            .success(function(response) {
-
-                if(response.success == true && response.total > 0)
-                {
-                    $scope.users = response.data;
-                }
-                else
-                {
-                    showError(response.error.message, 1);
-                }
-                $rootScope.doingResolve = false;
-
-            })
-            .error(function(response, status) {
-
-                showError(response, 1);
-                $rootScope.doingResolve = false;
-                if(status == 401)
-                {
-                    CookieStore.clearData();
-                    $location.path( '/login' );
-                }
-
-            });
-
-    }
-]);
-
-app.controller('HeartbeatController', ['$rootScope', '$scope',
-    function ($rootScope, $scope) {
-
-        $rootScope.full_screen = false;
-        $rootScope.doingResolve = false;
-
-    }
-]);
-
-app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
-
-        $rootScope.full_screen = true;
-        $rootScope.doingResolve = false;
-
-        var getRemember = CookieStore.get('cboAdmin_cookie_remember');
-        if(getRemember == true)
-        {
-            $scope.login = {
-                username: CookieStore.get('cboAdmin_cookie_email'),
-                remember_username: true
-            };
         }
+        return original.apply($location, [path]);
+    };
+}]);
 
-        $scope.loginMe = function(username, password, remmember) {
+function unique_array(){
+    var newArr = [],
+        origLen = origArr.length,
+        found, x, y;
 
-            $scope.login.working = true;
-
-            var auth = base64_encode( globalConfig.client_id+':'+globalConfig.client_secret );
-            var grant_type = encodeURIComponent( globalConfig.grant_type );
-            var uri = auth_url+'oauth2/token';
-            var send = {
-                grant_type: grant_type,
-                username: username,
-                password: password
-            };
-
-            $http.post( uri , $.param(send), {
-                headers: {
-                    'Authorization': 'Basic '+auth
-                }
-            })
-                .success(function(response) {
-
-                    $http.get( api_url+'organizations' , {
-                        headers: {
-                            'Authorization': 'Bearer '+response.access_token
-                        }
-                    })
-                        .success(function(responseClient) {
-
-                            var get_hosting_name = $location.host();
-                            var grand_access = false;
-                            var get_id = false;
-                            var get_redirect_url = false;
-
-                            if(responseClient.success == true && responseClient.total > 0)
-                            {
-                                for(var i=0; i<responseClient.total; i++)
-                                {
-                                    if(get_hosting_name == responseClient.data[i].url)
-                                    {
-                                        grand_access = true;
-                                        get_id = responseClient.data[i]._id;
-                                        get_redirect_url = responseClient.data[i].url;
-                                    }
-                                }
-                            }
-
-                            if(grand_access)
-                            {
-                                $http.get( api_url+get_id+'/users', {
-                                    headers: {
-                                        'Authorization': 'Bearer '+response.access_token
-                                    }
-                                })
-                                    .success(function(responseUser) {
-
-                                        if(responseUser.success == true && responseUser.total > 0)
-                                        {
-                                            var find = false;
-                                            var data = responseUser.data;
-                                            var id = false;
-                                            var complete_name = '';
-                                            for(var i=0; i<responseUser.total; i++)
-                                            {
-                                                if(data[i].email == send.username)
-                                                {
-                                                    id = data[i]._id;
-                                                    if(typeof data[i].first_name !== 'undefined' && data[i].first_name)
-                                                    {
-                                                        complete_name += data[i].first_name+' ';
-                                                    }
-                                                    if(typeof data[i].last_name !== 'undefined' && data[i].last_name)
-                                                    {
-                                                        complete_name += data[i].last_name;
-                                                    }
-
-                                                    $rootScope.completeName = complete_name;
-                                                    find = true;
-                                                }
-                                            }
-                                            if(find)
-                                            {
-                                                CookieStore.setData( response.access_token, get_id, get_redirect_url, id, send.username, complete_name );
-
-                                                if(typeof remmember !== 'undefined' && remmember == true)
-                                                {
-                                                    CookieStore.put_remember(true);
-                                                }
-                                                else
-                                                {
-                                                    CookieStore.put_remember(false);
-                                                }
-
-                                            }
-                                            $location.path( '/' );
-                                        }
-                                        else
-                                        {
-                                            showError(response.error.message, 1);
-                                        }
-                                        $rootScope.doingResolve = false;
-
-                                    })
-                                    .error(function(responseUser, status) {
-
-                                        showError(responseUser, 1);
-                                        $scope.login.working = false;
-
-                                    });
-
-                            }
-                            else
-                            {
-                                showError("You don't have any permission to access this page", 1);
-                                $scope.login.working = false;
-                            }
-
-                        })
-                        .error(function(responseClient) {
-
-                            showError(responseClient, 1);
-                            $scope.login.working = false;
-
-                        });
-
-                })
-                .error(function(response) {
-
-                    showError(response.error_description, 1);
-                    $scope.login.working = false;
-
-                });
-
-        };
-
-        $scope.forgotPassword = function(data)
-        {
-
-        };
-
+    for (x = 0; x < origLen; x++) {
+        found = undefined;
+        for (y = 0; y < newArr.length; y++) {
+            if (origArr[x] === newArr[y]) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            newArr.push(origArr[x]);
+        }
     }
-]);
+    return newArr;
+}
 
+app.factory('myGoogleAnalytics', [
+    '$rootScope', '$window', '$location',
+    function ($rootScope, $window, $location) {
 
-function showError(message, alert)
-{
+            var myGoogleAnalytics = {};
+
+            /**
+             * Set the page to the current location path
+             * and then send a pageview to log path change.
+             */
+            myGoogleAnalytics.sendPageview = function () {
+                if ($window.ga) {
+                    $window.ga('set', 'page', $location.path());
+                    $window.ga('send', 'pageview');
+                }
+            }
+
+            // subscribe to events
+            $rootScope.$on('$viewContentLoaded', myGoogleAnalytics.sendPageview);
+
+            return myGoogleAnalytics;
+    }
+  ])
+    .run([
+    'myGoogleAnalytics',
+    function (myGoogleAnalytics) {
+            // inject self
+    }
+  ]);
+
+function showError(message, alert) {
     var passingClass = 'alert-danger';
-    if(alert == 2)
-    {
+    if (alert == 2) {
         passingClass = 'alert-success'
     }
+    var message_alert = '<div class="alert ' + passingClass + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + message + '</div>';
+    if(message !== null) {
+        if (window.location.href.indexOf('/login') == -1) {
+            jQuery(".error-container.visible-on").append(message_alert);
+            setTimeout(function () {
+                jQuery('.alert').remove();
+            }, 3000);
+        } else {
+            jQuery("#login-error-message").append(message_alert);
+            setTimeout(function () {
+                jQuery('.alert').remove();
+            }, 3000);
+        }
+    }
+}
 
-    var message_alert = '<div class="alert '+passingClass+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'+message+'</div>';
-    jQuery("#error-container").append(message_alert);
-    setTimeout(function() {
-        jQuery('.alert').remove();
-    }, 3000);
+function ucwords(str) {
+    return (str + '').replace(/^([a-z])|\s+([a-z])/g, function ($1) {
+        return $1.toUpperCase();
+    });
+}
 
+function closed_sidebar() {
+    var body = angular.element(document.querySelector('body'));
+    var nav = angular.element(document.querySelector('#cbp-spmenu-s1'));
+    var icon = angular.element(document.querySelector('#showLeftPush'));
+    body.removeClass('cbp-spmenu-push-toright');
+    nav.removeClass('cbp-spmenu-open');
+    if (icon.hasClass('glyphicon glyphicon-remove')) {
+        icon.removeClass('glyphicon glyphicon-remove');
+        icon.addClass('glyphicon glyphicon-menu-hamburger');
+    } else if (icon.hasClass('glyphicon glyphicon-menu-hamburger')) {
+        icon.removeClass('glyphicon glyphicon-menu-hamburger');
+        icon.addClass('glyphicon glyphicon-remove');
+    }
 }
 
 function base64_encode(data) {
-    //  discuss at: http://phpjs.org/functions/base64_encode/
-    // original by: Tyler Akins (http://rumkin.com)
-    // improved by: Bayron Guevara
-    // improved by: Thunder.m
-    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // improved by: Rafał Kukawski (http://kukawski.pl)
-    // bugfixed by: Pellentesque Malesuada
-    //   example 1: base64_encode('Kevin van Zonneveld');
-    //   returns 1: 'S2V2aW4gdmFuIFpvbm5ldmVsZA=='
-    //   example 2: base64_encode('a');
-    //   returns 2: 'YQ=='
 
     var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
     var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
@@ -1676,4 +470,13 @@ function base64_encode(data) {
     var r = data.length % 3;
 
     return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
+}
+
+
+function start_time_idle() {
+    session_timeout.login();
+}
+
+function stop_time_idle() {
+    session_timeout.logout();
 }
