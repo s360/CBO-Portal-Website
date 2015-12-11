@@ -32,8 +32,8 @@ node_modules
 .buildpath
 .idea
 config.codekit
-src/node_modules
+node_modules
 bower_components
 config
 *.log
-src/public/config/config.js
+app/config/config.js
