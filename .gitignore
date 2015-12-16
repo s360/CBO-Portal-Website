@@ -36,4 +36,4 @@ node_modules
 bower_components
 config
 *.log
-app/config/config.js
+src/public/config/config.js
