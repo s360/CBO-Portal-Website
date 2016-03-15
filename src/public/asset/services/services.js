@@ -101,6 +101,10 @@ app.factory('CookieStore', function ($rootScope, $http, $window, $cookieStore, $
                 var refresh_token = this.get('refresh_token');
                 var last_url = $location.url();
 
+                if(last_url === '/loading'){
+                    last_url = '/student';
+                }
+
                 $http.get(api_url + 'user', {
                     headers: {
                         'Authorization': 'Bearer ' + token
@@ -162,9 +166,11 @@ app.factory('CookieStore', function ($rootScope, $http, $window, $cookieStore, $
 
                                                         if (role === 'admin') {
                                                             $rootScope.users_link = true;
+                                                            $rootScope.reports_link = true;
                                                             $rootScope.tags_link = true;
                                                         } else {
                                                             $rootScope.users_link = false;
+                                                            $rootScope.reports_link = false;
                                                             $rootScope.tags_link = false;
                                                         }
                                                         $rootScope.completeName = complete_name;
@@ -337,3 +343,28 @@ app.factory('myGoogleAnalytics', [
         return myGoogleAnalytics;
     }
 ]);
+
+app.factory('httpInterceptor', function ($q,$rollbar,$location) {
+    return {
+        response: function (response) {
+            if(response.headers()['content-type'] === "application/json; charset=utf-8"){
+                // Validate response, if not ok reject
+                //if(!data)
+                //    return $q.reject(response);
+            }
+            return response;
+        },
+        responseError: function (response) {
+            if(response.status === 500 || response.status === 502){
+                $rollbar.error(response);
+                showError(response.statusText, 1);
+            }else if(response.status === 401)
+            {
+                showError(response.statusText, 1);
+                $location.path('/login');
+                $rollbar.error(response);
+            }
+            return $q.reject(response);
+        }
+    };
+});

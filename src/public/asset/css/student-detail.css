@@ -1,3 +1,70 @@
+.highcharts-container{
+    width: 100%;
+}
+#student-graph{
+    padding: 20px 20px 10px 20px;
+    overflow: auto;
+    width: 100%;
+}
+.modal-body.enrollment{
+    padding: 0;
+}
+.no-padding-left-right{
+    padding-left: 0;
+    padding-right: 0;
+}
+.search-btn.detail{
+    position: relative;
+    margin-top: 8px;
+}
+.att-content.behavior-center{
+    padding-top: 10px;
+    line-height: 1.5;
+}
+.scrollArea table th .box {
+    padding: 0px 11px 0px 0px!important;
+}
+.modal-title {
+    margin: 0;
+    line-height: 1.42857143;
+    position: relative;
+    top: 6px;
+}
+.modal-header{
+    border-bottom: none;
+}
+h1.stat:after{
+    content:"\e185";
+    font-family:"Glyphicons Halflings";
+    /*line-height:1;*/
+    margin: -2px;
+    display:inline-block;
+}
+.enrollment-divider{
+    width: 100%;
+    margin: 10px 0px;
+    height: 2px;
+    background: transparent linear-gradient(135deg, #EF7700 0%, #F2A900 37%, #F2CC10 69%, #FCE623 100%) repeat scroll 0% 0%;
+}
+li.first-column{
+    text-align: left!important;
+    padding: 10px!important;
+    width: 16%;
+}
+.student-summary .title{
+    margin-top: 10px;
+    font-weight: bold;
+/*    letter-spacing: 0.2em;*/
+}
+.transcript-title{
+    font-weight: bold;
+}
+dl{
+    margin-bottom: 0;
+}
+.popover-content{
+    width:180px;
+}
 .no-data {
     margin: 0;
     padding: 25px;
@@ -16,6 +83,12 @@
     float: right;
     top: 5px;
     position: relative;
+}
+.no-padding{
+    padding:0!important;
+}
+.no-margin{
+    margin: 0!important;
 }
 .no-padding-left{
     padding-left:0;
@@ -39,23 +112,18 @@
     display: none;
 }
 .top-space {
-    margin-top: 10px;
+    margin-top: 0;
 }
 .display-inline-blk {
     display: inline-block;
 }
 .bottom-space {
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
+    margin-bottom:0;
 }
 
 .hoverable:not(:hover) + .show-on-hover {
     display: none;
-}
-* {
-    border-top-left-radius: 0px!important;
-    border-top-right-radius: 0px!important;
-    border-bottom-left-radius: 0px!important;
-    border-bottom-right-radius: 0px!important;
 }
 ul.nav.nav-tabs.nav-justified li,
 .panel.attendance-behavior {
@@ -63,8 +131,6 @@ ul.nav.nav-tabs.nav-justified li,
     border: 0px;
 }
 ul.nav.nav-tabs.nav-justified li a {
-    font-size: 14px;
-    font-weight: bold;
     color: black;
 }
 ul.flexbox.attendance-behavior,
@@ -83,57 +149,28 @@ ul.flexbox.transcript-content {
     margin: 0;
     padding: 0;
 }
+.uppercase{
+    text-transform: uppercase;
+}
+ul.attendance-behavior li.attendance-date{
+    width: 20%;
+}
+
+ul.attendance-behavior li.att-content{
+    width: 8.5%;
+}
+ul.attendance-behavior li.attendance-weekly{
+    width: 20%;
+}
 ul.attendance-behavior li {
     padding: 0;
     margin: 0;
     text-align: center;
     height: 50px;
     line-height: 50px;
+    color:black;
 }
-ul.attendance-behavior li:nth-child(1) {
-    width: 25%;
-    color: black;
-    font-size: 14px;
-    font-weight: bold;
-}
-ul.attendance-behavior li:nth-child(2) {
-    width: 10%;
-    color: black;
-    font-size: 14px;
-    font-weight: bold;
-    position: relative;
-}
-ul.attendance-behavior li:nth-child(3) {
-    width: 10%;
-    color: black;
-    font-size: 14px;
-    font-weight: bold;
-}
-ul.attendance-behavior li:nth-child(4) {
-    width: 10%;
-    color: black;
-    font-size: 14px;
-    font-weight: bold;
-}
-ul.attendance-behavior li:nth-child(5) {
-    width: 10%;
-    color: black;
-    font-size: 14px;
-    font-weight: bold;
-}
-ul.attendance-behavior li:nth-child(6) {
-    width: 10%;
-    color: black;
-    font-size: 14px;
-    font-weight: bold;
-}
-ul.attendance-behavior li:nth-child(7) {
-    width: 25%;
-    color: black;
-    font-size: 14px;
-    font-weight: bold;
-    position: relative;
-}
+
 .panel-heading.attendance-behavior {
     padding: 0;
     margin: 0;
@@ -165,14 +202,16 @@ ul.attendance-behavior li:nth-child(7) {
     position: relative;
 }
 .period-col {
-    width: 25%;
+    width: 20%;
 }
 .attendance-content {
-    width: 50%;
+    width: 60%;
+    padding-top:5px;
+    padding-left: 16px;
 }
 .attendance-legend {
-    width: 25%;
-    padding: 1%;
+    width: 20%;
+    padding: 20px;
 }
 ul.period-col.menu {
     width: 100%;
@@ -183,8 +222,6 @@ ul.period-col.menu li {
     text-align: center;
     height: 50px;
     line-height: 50px;
-    font-size: 14px;
-    font-weight: bold;
 }
 hr.attendance-separator {
     margin: 0;
@@ -192,23 +229,12 @@ hr.attendance-separator {
     border: 3px solid #ededed;
     top: 325px;
     position: absolute;
-    width: 99%;
+    width: 95.5%;
 }
-/*.monday,*/
-/*.tuesday,*/
-/*.wednesday,*/
-/*.thursday,*/
-/*.friday {*/
-    /*display: block;*/
-    /*width: 20%;*/
-    /*height: 300px;*/
-    /*margin: 0;*/
-    /*padding: 1px;*/
-    /*float: left;*/
-/*}*/
+
 .days {
     display: block;
-    width: 20%;
+    width: 14%;
     height: 300px;
     margin: 0;
     padding: 1px;
@@ -224,7 +250,7 @@ hr.attendance-separator {
     display: block;
 }
 .present {
-    background-color: #B1E0E8;
+    background-color: #A9D8BE;
 }
 .excused {
     background-color: #2F9DBB;
@@ -232,10 +258,10 @@ hr.attendance-separator {
 .n_a {
     background-color: #efefef;
 }
-.late {
+.tardy {
     background-color: #4E73A7;
 }
-.holiday {
+.other {
     background-color: #765B74;
 }
 .unexcused {
@@ -274,11 +300,11 @@ ul.list-group.legend-list li {
     border-bottom: solid 3px rgba(0, 0, 0, 0.1);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
 }
-.col-separator {
+.border-attendance-left{
     border-left: 3px solid #aaa;
-    position: absolute;
-    top: 15%;
-    bottom: 15%
+}
+.border-attendance-right{
+    border-right: 3px solid #aaa;
 }
 .last-col-separator {
     border-left: 3px solid #aaa;
@@ -290,7 +316,7 @@ ul.list-group.legend-list li {
     display: none;
 }
 .show {
-    display: "";
+    display: block;
 }
 .button.btn-legend {
     position: relative;
@@ -362,7 +388,6 @@ ul.list-group.legend-list li {
     /*padding: 1%;*/
 /*}*/
 ul.flexbox.transcript {
-    padding: 10px;
     display: -webkit-box;
     /* OLD - iOS 6-, Safari 3.1-6 */
     display: -moz-box;
@@ -374,74 +399,24 @@ ul.flexbox.transcript {
     display: flex;
     /* NEW, Spec - Opera 12.1, Firefox 20+ */
     margin: 0;
-    padding: 1%;
-}
-ul.transcript li:nth-child(1) {
-    width: 16%;
-    text-align: left;
-}
-ul.transcript li:nth-child(2) {
-    width: 16.8%;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: 1px;
-    padding-top: 2%;
-}
-ul.transcript li:nth-child(3) {
-    width: 16.8%;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: 1px;
-    padding-top: 2%;
-}
-ul.transcript li:nth-child(4) {
-    width: 16.8%;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: 1px;
-    padding-top: 2%;
-}
-ul.transcript li:nth-child(5) {
-    width: 16.8%;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: 1px;
-    padding-top: 2%;
-}
-ul.transcript li:nth-child(6) {
-    width: 16.8%;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: 1px;
-    padding-top: 2%;
-}
-ul.transcript li:nth-child(7) {
-    width: 14%;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: 1px;
-    padding-top: 2%;
+    padding:20px 20px 10px 20px;
 }
 ul.transcript li {
     text-align: center;
-    padding: 0;
     margin: 0;
 }
-.button.transcript-school-history {
-    margin: 0;
-    letter-spacing: 1px;
-    font-size: 12px;
-    border: 2px solid black;
-    text-align: center;
-    white-space: normal;
-    width: 90%;
-    padding: 0;
+.transcript-subject{
+    font-size: 14px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color:#fff;
+    padding: 10px;
+    text-transform: uppercase;
+}
+
+
+.btn.btn-default.transcript-school-history{
+    margin-right: 10px;
 }
 .separator-transcript {
     width: 99.7%;
@@ -461,9 +436,8 @@ ul.transcript li {
 ul li.transcript-content {
     padding: 0;
     margin: 0;
-    font-size: 14px;
     font-weight: bold;
-    letter-spacing: 1px;
+    /*letter-spacing: 1px;*/
 }
 .hr-transcript {
     border: 1px solid black;
@@ -471,60 +445,62 @@ ul li.transcript-content {
     margin: 0;
     position: relative;
 }
-ul li.transcript-content:nth-child(1) {
-    width: 16%;
-}
-ul li.transcript-content:nth-child(2) {
-    width: 16.8%;
-    padding-top: 2.5%;
-    padding-left: 15px;
-}
-ul li.transcript-content:nth-child(3) {
-    width: 16.8%;
-    padding-top: 2.5%;
-    padding-left: 15px;
-}
-ul li.transcript-content:nth-child(4) {
-    width: 16.8%;
-    padding-top: 2.5%;
-    padding-left: 15px;
-}
-ul li.transcript-content:nth-child(5) {
-    width: 16.8%;
-    padding-top: 2.5%;
-    padding-left: 15px;
-}
-ul li.transcript-content:nth-child(6) {
-    width: 16.8%;
-    padding-top: 2.5%;
-    padding-left: 15px;
-}
-ul li.transcript-content:nth-child(7) {
-    width: 14%;
-    padding-top: 2.5%;
-    padding-left: 15px;
-}
+/*ul li.transcript-content:nth-child(1) {*/
+    /*width: 16%;*/
+/*}*/
+
+/*ul li.transcript-content:nth-child(2) {*/
+    /*width: 16.8%;*/
+    /*padding-top: 2.5%;*/
+    /*padding-left: 15px;*/
+/*}*/
+/*ul li.transcript-content:nth-child(3) {*/
+    /*width: 16.8%;*/
+    /*padding-top: 2.5%;*/
+    /*padding-left: 15px;*/
+/*}*/
+/*ul li.transcript-content:nth-child(4) {*/
+    /*width: 16.8%;*/
+    /*padding-top: 2.5%;*/
+    /*padding-left: 15px;*/
+/*}*/
+/*ul li.transcript-content:nth-child(5) {*/
+    /*width: 16.8%;*/
+    /*padding-top: 2.5%;*/
+    /*padding-left: 15px;*/
+/*}*/
+/*ul li.transcript-content:nth-child(6) {*/
+    /*width: 16.8%;*/
+    /*padding-top: 2.5%;*/
+    /*padding-left: 15px;*/
+/*}*/
+/*ul li.transcript-content:nth-child(7) {*/
+    /*width: 14%;*/
+    /*padding-top: 2.5%;*/
+    /*padding-left: 15px;*/
+/*}*/
 .attempted-credit {
     position: relative;
-    top: 6px;
+    margin: 6px 0;
 }
 .descriptor-title {
-    font-size: 14px;
+    font-size: 12px;
+    font-size: 1.2rem;
     font-weight: bolder;
-    letter-spacing: 2px;
-    margin-bottom: 21px;
+/*    letter-spacing: 2px;*/
+    margin-bottom: 5px;
     line-height: 16px;
 }
 .present-font-color {
-    color: #B1E0E8;
+    color: #A9D8BE;
 }
 .excused-font-color {
     color: #2F9DBB;
 }
-.late-font-color {
+.tardy-font-color {
     color: #4E73A7;
 }
-.holiday-font-color {
+.other-font-color {
     color: #765B74;
 }
 .unexcused-font-color {
@@ -559,7 +535,7 @@ ul li.transcript-content:nth-child(7) {
 }
 .transcript-container .inner-transcript-container{
     overflow: auto;
-    height: 420px;
+    /*height: 420px;*/
 }
 .school.history {
     width: 42.6%;
@@ -571,7 +547,9 @@ ul li.transcript-content:nth-child(7) {
 }
 
 .transcript-display{
-	margin-bottom:35px;
+    margin-bottom: 35px;
+    padding: 10px 5px;
+
 }
 
 /*
@@ -616,14 +594,20 @@ ul li.transcript-content:nth-child(7) {
     padding-left: 10px;
     padding-bottom: 30px;
     width: 96%;
+    padding-right: 5px;
 }
 @media (max-width: 1280px) {
+    .studentdetail-filter{
+        position: relative;
+        left: 43%;
+        width: 200px;
+    }
     ul.transcript li:nth-child(2) {
         width: 16.8%;
         font-size: 14px;
         font-weight: bold;
         color: white;
-        letter-spacing: 1px;
+/*        letter-spacing: 1px;*/
         padding-top: 3%;
     }
     ul.transcript li:nth-child(3) {
@@ -631,7 +615,7 @@ ul li.transcript-content:nth-child(7) {
         font-size: 14px;
         font-weight: bold;
         color: white;
-        letter-spacing: 1px;
+/*        letter-spacing: 1px;*/
         padding-top: 3%;
     }
     ul.transcript li:nth-child(4) {
@@ -639,7 +623,7 @@ ul li.transcript-content:nth-child(7) {
         font-size: 14px;
         font-weight: bold;
         color: white;
-        letter-spacing: 1px;
+/*        letter-spacing: 1px;*/
         padding-top: 3%;
     }
     ul.transcript li:nth-child(5) {
@@ -647,7 +631,7 @@ ul li.transcript-content:nth-child(7) {
         font-size: 14px;
         font-weight: bold;
         color: white;
-        letter-spacing: 1px;
+/*        letter-spacing: 1px;*/
         padding-top: 3%;
     }
     ul.transcript li:nth-child(6) {
@@ -655,7 +639,7 @@ ul li.transcript-content:nth-child(7) {
         font-size: 14px;
         font-weight: bold;
         color: white;
-        letter-spacing: 1px;
+/*        letter-spacing: 1px;*/
         padding-top: 3%;
     }
     ul.transcript li:nth-child(7) {
@@ -663,7 +647,7 @@ ul li.transcript-content:nth-child(7) {
         font-size: 14px;
         font-weight: bold;
         color: white;
-        letter-spacing: 1px;
+/*        letter-spacing: 1px;*/
         padding-top: 3%;
     }
     ul li.transcript-content:nth-child(2) {
@@ -752,6 +736,7 @@ ul li.transcript-content:nth-child(7) {
     }
 }
 .subhead.transcript {
+
     padding: 0;
     margin: 0;
     font-weight: bold;
@@ -792,7 +777,7 @@ li.transcript-content>.transcript-content-array:hover .transcript-descriptor {
     height: auto;
 }
 .transcript-descriptor:hover ~ .transcript-display {
-    visibility: none;
+    visibility: hidden;
 }
 
 ul.flexbox.attendance-behavior,
@@ -803,7 +788,7 @@ ul.flexbox.transcript-content {
     display: -webkit-flex;
     display: flex;
     margin: 0;
-    padding: 1%;
+    padding:20px 20px 10px 20px;
 }
 .scrollableContainer {
     height: 310px;
@@ -850,9 +835,7 @@ ul.student-program-participation {
     padding: 0;
 }
 ul.student-program-participation > li {
-    padding-left: 3%;
-    padding-top: 1%;
-    padding-bottom: 1%;
+    padding: 20px
 }
 ul.student-program-participation > li:nth-child(even) {
     background-color: #ededed;
@@ -875,6 +858,9 @@ ul.cohorts {
 .two-lines-current-class {
     width: 245px;
 }
+.two-lines,.two-lines-current-class > .title{
+    width:130px;
+}
 .aligning {
     padding-left: 0;
 }
@@ -887,8 +873,9 @@ ul.cohorts {
 }
 
 .loading-icon{
-    position: relative;
-    top:5px;
+    position: absolute;
+    top: 2em;
+    left: 34em;
 }
 /**
  * Student Detail
@@ -943,245 +930,69 @@ ul.cohorts {
 
 .tc-1-col{
     width: 84%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-2-col{
     width: 42%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-3-col{
     width: 28%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-4-col{
     width: 21%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-5-col{
     width: 16.8%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-6-col{
     width: 14%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-7-col{
     width: 12%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-8-col{
     width: 10.5%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-9-col{
     width: 9.3333%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-10-col{
     width: 8.4%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-11-col{
     width: 7.6363%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-12-col{
     width: 7%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-13-col{
     width: 6.4615%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-14-col{
     width: 6%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-15-col{
     width: 5.6%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-16-col{
     width: 5.25%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-17-col{
     width: 4.9411%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-18-col{
     width: 4.6666%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-19-col{
     width: 4.4210%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-20-col{
     width: 4.2222%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-21-col{
     width: 4%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 .tc-22-col{
     width: 3.8181%!important;
-    font-size: 14px!important;
-    font-weight: bold!important;
-    color: white!important;
-    letter-spacing: 1px!important;
-    padding-top: 2%!important;
-    padding-left:5px!important;
-    padding-right: 5px!important;
-    padding-bottom: 5px!important;
 }
 
 .tcontent-1-col{
@@ -1295,23 +1106,23 @@ ul.cohorts {
     padding-left:0!important;
 }
 
-.vertical-line{
-    border-right: 3px solid #eee;
-}
-.extra-space{
-    padding-left:5%;
-}
-
 .dark{
 background-color:#eee;
 }
 
 .icon-ok {
-    background: url(../img/check-small.png);
+    /*background: url(../img/check-small.png);*/
     width: 16px;
     height: 16px;
     display: block;
     position: relative;
+}
+
+.icon-ok:before{
+    content: "\e013";
+    font-family:"Glyphicons Halflings";
+    line-height:1;
+    display:inline-block;
 }
 
 .filter-caret{
@@ -1334,5 +1145,83 @@ dt, dd {
     cursor: pointer;
 }
 .popover{
+    font-family: 'Source Sans Pro', sans-serif;
     background-color: white!important;
+}
+
+.studentdetail-filter{
+    position: relative;
+    left: 43%;
+    width: 200px;
+    margin:20px 0 0;
+}
+.transcript-json{
+    color:#29B6D8;
+}
+.transcript-json:hover{
+    cursor: pointer;
+    color: #337ab7;
+}
+.font-bold{
+    font-weight: bold;
+}
+
+/*FIXED HEADER*/
+.header-fixed {
+    width: 100%
+}
+
+.header-fixed > thead,
+.header-fixed > tbody,
+.header-fixed > thead > tr,
+.header-fixed > tbody > tr,
+.header-fixed > thead > tr > th,
+.header-fixed > tbody > tr > td {
+    display: block;
+}
+
+.header-fixed > tbody > tr:after,
+.header-fixed > thead > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.header-fixed > tbody {
+    overflow-y: auto;
+    height: 350px;
+}
+
+.header-fixed > tbody > tr > td,
+.header-fixed > thead > tr > th {
+    width: 16%;
+    float: left;
+    margin-left: 4px;
+
+}
+.modal-dialog.enrollment{
+    width: 700px;
+    margin: 30px auto;
+}
+td.school-name{
+
+}
+td.school-year{
+    padding-left: 13px !important;
+}
+td.entry-date{
+    padding-left: 14px !important;
+}
+td.exit-date{
+    padding-left: 15px !important;
+}
+td.grade-level{
+    padding-left: 20px !important;
+}
+td.status{
+    padding-left: 20px !important;
+}
+td.description{
+    padding-left: 22px !important;
 }

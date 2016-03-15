@@ -3,6 +3,8 @@ app.directive('attendance', function(){
     return {
         restrict: 'E',
         scope:{
+            reason:'@',
+            category:'@',
             url:'@',
             slug:'@',
             stripping:'@',
@@ -12,7 +14,42 @@ app.directive('attendance', function(){
             eventdate:'@',
             description:'@'
         },
-        template:'<div popover-template="url" popover-trigger="mouseenter" popover-placement="right" class="grid-item {{slug}} {{stripping}} {{na}}"></div>'
+        template:'<div uib-popover-template="url" popover-trigger="mouseenter" popover-placement="right" class="grid-item {{slug}} {{stripping}} {{na}}"></div>'
+    };
+});
+
+app.directive('listAttendance',function(){
+    'use strict';
+    return{
+        restrict:'E',
+        scope:{
+            url:'@',
+            label:'@',
+            info:'@',
+            items:'@'
+        },
+        template:'<div uib-popover-template="url"  popover-trigger="mouseenter" popover-placement="left"><label class="{{label}}">{{info}}</label></div>',
+        link:function(scope,elm,attrs){
+            var notes = attrs.items.replace('["','').replace('"]','').replace('","',",").replace('"[]"','');
+            scope.list = notes.split(",");
+
+        }
+    }
+});
+
+
+app.directive('legend', function(){
+    'use strict';
+    return {
+        restrict: 'E',
+        scope:{
+            url:'@',
+            pagetitle:'@',
+            description:'@',
+            fontcolor:'@',
+            type:'@'
+        },
+        template:'<li uib-popover-template="url" popover-trigger="mouseenter" popover-placement="left" class="list-group-item {{type}} uppercase">{{type}}</li>'
 
     };
 });
@@ -59,6 +96,81 @@ app.directive('dropdownMultiselect', function($document){
                 } else {
                     $scope.model.push(id);
                 }
+                return false;
+            };
+            $scope.isChecked = function (id) {
+                if (_.contains($scope.model, id)) {
+                    return 'icon-ok pull-right';
+                }
+                return false;
+            };
+        }
+    };
+});
+
+app.directive('filterMultiselect', function($document){
+    'use strict';
+    return {
+        restrict: 'E',
+        scope:{
+            model: '=',
+            options: '=',
+            title:'@'
+        },
+
+        template: "<div class='multiselect'>"+
+        "<button class='button fltr-graph filter-btn' ng-click='toggleSelect()'>{{title}}<span class='filter-caret caret'></span></button>"+
+        "<ul  class='filter-btn popup' ng-show='isPopupVisible'>" +
+        "<li class='list-dropdown-padding' data-ng-repeat='option in options' data-ng-click='setSelectedItem()'>{{option.name}}<span data-ng-class='isChecked(option.id)'></span></li>" +
+        "</ul>" +
+        "</div>",
+        link:function(scope,element,attr){
+
+            scope.isPopupVisible = false;
+            scope.toggleSelect = function(){
+                scope.isPopupVisible = !scope.isPopupVisible;
+            };
+            $document.bind('click', function(event){
+                var isClickedElementChildOfPopup = element
+                        .find(event.target)
+                        .length > 0;
+
+                if (isClickedElementChildOfPopup)
+                {return;}
+
+                scope.isPopupVisible = false;
+                scope.$apply();
+            });
+        },
+        controller: function($scope){
+
+            var unselected_items = [];
+            var selected_items = [];
+            var temp = [];
+            var chart;
+            $scope.setSelectedItem = function(){
+                var id = this.option.id;
+                if (_.contains($scope.model, id)) {
+                    $scope.model = _.without($scope.model, id);
+                    if($scope.model.length >0){
+                        for(var i=0;i<selected_items.length;i++){
+                            var id = _.get($scope.model[i],'id');
+                            unselected_items.splice(id,1);
+                        }
+                    }
+                    angular.forEach(unselected_items,function(v){
+                        chart.xAxis[0].removePlotBand(v.id);
+                    });
+                } else {
+                    $scope.model.push(id);
+                }
+                chart = $('#student-graph').highcharts();
+                angular.forEach($scope.model,function(v){
+                    chart.xAxis[0].addPlotBand(v);
+                    temp.push(v);
+                    unselected_items = _.uniq(temp,'id');
+                    selected_items = unselected_items;
+                });
                 return false;
             };
             $scope.isChecked = function (id) {
@@ -166,7 +278,7 @@ app.directive('phonenumberDirective', ['$filter', function ($filter) {
         'use strict';
         // scope.inputValue is the value of input element used in template
         scope.inputValue = scope.phonenumberModel;
-
+        console.log(scope.phonenumberModel);
         scope.$watch('inputValue', function (value, oldValue) {
 
             value = String(value);
@@ -188,35 +300,35 @@ app.directive('phonenumberDirective', ['$filter', function ($filter) {
     };
 }]);
 
-app.directive('resize', function ($window) {
-    'use strict';
-    return function (scope, element) {
-        var w = angular.element($window);
-        scope.getWindowDimensions = function () {
-            return {
-                'h': w.height(),
-                'w': w.width()
-            };
-        };
-        scope.$watch(scope.getWindowDimensions, function (newValue, oldValue) {
-            scope.windowHeight = newValue.h;
-            scope.windowWidth = newValue.w;
-            if (w.innerWidth < 767) {
-                $rootScope.loginClass = "col-md-offset-4 col-md-5 login-page-mobile";
-                $rootScope.data_content = "asset/templates/mobile.html";
-
-            } else if (w.innerWidth > 767) {
-                $rootScope.loginClass = "col-md-offset-4 col-md-5 login-page";
-                $rootScope.data_content = "asset/templates/desktop.html";
-            }
-
-        }, true);
-
-        w.bind('resize', function () {
-            scope.$apply();
-        });
-    };
-});
+//app.directive('resize', function ($window) {
+//    'use strict';
+//    return function (scope, element) {
+//        var w = angular.element($window);
+//        scope.getWindowDimensions = function () {
+//            return {
+//                'h': w.height(),
+//                'w': w.width()
+//            };
+//        };
+//        scope.$watch(scope.getWindowDimensions, function (newValue, oldValue) {
+//            scope.windowHeight = newValue.h;
+//            scope.windowWidth = newValue.w;
+//            //if (w.innerWidth < 767) {
+//            //    $rootScope.loginClass = "col-md-offset-4 col-md-5 login-page-mobile";
+//            //    $rootScope.data_content = "asset/templates/mobile.html";
+//            //
+//            //} else if (w.innerWidth > 767) {
+//            //    $rootScope.loginClass = "col-md-offset-4 col-md-5 login-page";
+//            //    $rootScope.data_content = "asset/templates/desktop.html";
+//            //}
+//
+//        }, true);
+//
+//        w.bind('resize', function () {
+//            scope.$apply();
+//        });
+//    };
+//});
 
 app.directive('a', function () {
     'use strict';
@@ -273,3 +385,274 @@ app.directive('datepicker', function () {
     };
 
 });
+
+app.directive('studentSchoolDistrictPie', function () {
+    'use strict';
+    return {
+        restrict: 'C',
+        replace: true,
+        scope: {
+            districts: '=',
+            schools: '='
+        },
+        controller: function($scope, $element, $attrs) {
+
+        },
+        template: '<div id="student-school-district-pie" style="margin: 20px auto">not working</div>',
+        link: function(scope, element, attrs) {
+            var chart = new Highcharts.Chart({
+                credits: {
+                    enabled: false
+                },
+                chart: {
+                    renderTo: 'student-school-district-pie',
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Students by District and School'
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br/>',
+                    pointFormat: '<small style="font-size: 11px;">{series.name}: {point.y}</small>',
+                    percentageDecimals: 1
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: false,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        name: 'Total',
+                        size: '50%',
+                        dataLabels: {
+                            color: '#ffffff',
+                            distance: -30
+                        },
+                        data: scope.districts
+                    },
+                    {
+                        type: 'pie',
+                        name: 'Total',
+                        size: '100%',
+                        innerSize: '53%',
+                        dataLabels: {
+                            formatter: function () {
+                                // display only if larger than 1
+                                return this.y >= 1 ? this.point.name + ': ' + this.y : null;
+                            }
+                        },
+                        data: scope.schools
+                    }
+                ]
+            });
+
+            scope.$watch("districts", function(newValue) {
+                chart.series[0].setData(newValue, true);
+            }, true);
+
+            scope.$watch("schools", function(newValue) {
+                chart.series[1].setData(newValue, true);
+            }, true);
+
+        }
+    }
+
+});
+
+
+app.directive('studentGradeGradPie', function () {
+    'use strict';
+    return {
+        restrict: 'C',
+        replace: true,
+        scope: {
+            grade: '='
+        },
+        controller: function($scope, $element, $attrs) {
+
+        },
+        template: '<div id="student-grade-grad-pie" style="margin: 20px auto">not working</div>',
+        link: function(scope, element, attrs) {
+            var chart2 = new Highcharts.Chart({
+                credits: {
+                    enabled: false
+                },
+                chart: {
+                    renderTo: 'student-grade-grad-pie',
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Students by Grade Level'
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br/>',
+                    pointFormat: '<small style="font-size: 11px;">{series.name}: {point.y}</small>',
+                    percentageDecimals: 1
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        name: 'Total',
+                        size: '100%',
+                        data: scope.grade
+                    }
+                ]
+            });
+
+            scope.$watch("grade", function(newValue) {
+                chart2.series[0].setData(newValue, true);
+            }, true);
+
+        }
+    }
+
+});
+
+
+app.directive('studentRaceEthnicityPie', function () {
+    'use strict';
+    return {
+        restrict: 'C',
+        replace: true,
+        scope: {
+            ethnicity: '='
+        },
+        controller: function($scope, $element, $attrs) {
+
+        },
+        template: '<div id="student-race-ethnicity-pie" style="margin: 20px auto">not working</div>',
+        link: function(scope, element, attrs) {
+            var chart3 = new Highcharts.Chart({
+                credits: {
+                    enabled: false
+                },
+                chart: {
+                    renderTo: 'student-race-ethnicity-pie',
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Students by Race/Ethnicity'
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br/>',
+                    pointFormat: '<small style="font-size: 11px;">{series.name}: {point.y}</small>',
+                    percentageDecimals: 1
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        name: 'Total',
+                        size: '100%',
+                        data: scope.ethnicity
+                    }
+                ]
+            });
+
+            scope.$watch("ethnicity", function(newValue) {
+                chart3.series[0].setData(newValue, true);
+            }, true);
+
+        }
+    }
+
+});
+
+
+
+app.directive('studentGenderPie', function () {
+    'use strict';
+    return {
+        restrict: 'C',
+        replace: true,
+        scope: {
+            gender: '='
+        },
+        controller: function($scope, $element, $attrs) {
+
+        },
+        template: '<div id="student-gender-pie" style="margin: 20px auto">not working</div>',
+        link: function(scope, element, attrs) {
+            var chart4 = new Highcharts.Chart({
+                credits: {
+                    enabled: false
+                },
+                chart: {
+                    renderTo: 'student-gender-pie',
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Students by Gender'
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.key}</b><br/>',
+                    pointFormat: '<small style="font-size: 11px;">{series.name}: {point.y}</small>',
+                    percentageDecimals: 1
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            color: '#000000',
+                            connectorColor: '#000000'
+                        }
+                    }
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        name: 'Total',
+                        size: '100%',
+                        data: scope.gender
+                    }
+                ]
+            });
+
+            scope.$watch("gender", function(newValue) {
+                chart4.series[0].setData(newValue, true);
+            }, true);
+
+        }
+    }
+
+});
+

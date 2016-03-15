@@ -11,6 +11,7 @@ app.controller('StudentProgramAddController', ['$rootScope', '$scope', '$routePa
         };
 
         $scope.addProgramStudent = function (program) {
+
             if (program) {
                 $scope.working = true;
                 $http.post(api_url + AuthenticationService.organization_id + '/students/' + student_id + '/programs', $.param(program), {
@@ -19,7 +20,7 @@ app.controller('StudentProgramAddController', ['$rootScope', '$scope', '$routePa
                     }
                 })
                     .success(function (response) {
-                        //console.log(response);
+
                         if (response.success === true) {
                             showError(response.message, 2);
                             $location.path('/login');
@@ -32,8 +33,6 @@ app.controller('StudentProgramAddController', ['$rootScope', '$scope', '$routePa
                     })
                     .error(function (response, status) {
 
-                        //console.log(response);
-                        //console.log(status);
                         showError(response.error, 1);
                         $scope.working = false;
                         if (status === 401) {
@@ -85,7 +84,8 @@ app.controller('StudentProgramAddController', ['$rootScope', '$scope', '$routePa
 
 
                 jQuery("#cohort").tagit({
-                    availableTags: availableTags
+                    availableTags: availableTags,
+                    allowSpaces:true
                 });
 
 
@@ -94,8 +94,6 @@ app.controller('StudentProgramAddController', ['$rootScope', '$scope', '$routePa
             })
             .error(function (response, status) {
 
-                //console.log(response);
-                //console.log(status);
                 showError(response.error, 1);
                 $rootScope.doingResolve = false;
                 if (status === 401) {
@@ -123,8 +121,6 @@ app.controller('StudentProgramAddController', ['$rootScope', '$scope', '$routePa
             })
             .error(function (response, status) {
 
-                //console.log(response);
-                //console.log(status);
                 showError(response.error, 1);
                 $rootScope.doingResolve = false;
                 if (status === 401) {

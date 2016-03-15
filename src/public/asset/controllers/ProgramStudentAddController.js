@@ -3,9 +3,12 @@ app.controller('ProgramStudentAddController', ['$rootScope', '$scope', '$routePa
         'use strict';
         $rootScope.full_screen = false;
         $rootScope.doingResolve = false;
-        var rawCohart = '';
+        var rawCohart = "";
         var program_id = $routeParams.program_id;
-
+        $scope.load_student = true;
+        $scope.$watch('program.cohort',function(cohort){
+            rawCohart=cohort;
+        });
 
         $http.get(api_url + AuthenticationService.organization_id + '/programs/' + program_id, {
             headers: {
@@ -19,8 +22,6 @@ app.controller('ProgramStudentAddController', ['$rootScope', '$scope', '$routePa
             })
             .error(function (response, status) {
 
-                //console.log(response);
-                //console.log(status);
                 showError(response, 1);
                 $rootScope.doingResolve = false;
                 if (status === 401) {
@@ -45,7 +46,8 @@ app.controller('ProgramStudentAddController', ['$rootScope', '$scope', '$routePa
 
 
                 jQuery("#cohort").tagit({
-                    availableTags: availableTags
+                    availableTags: availableTags,
+                    allowSpaces:true
                 });
 
 
@@ -66,7 +68,7 @@ app.controller('ProgramStudentAddController', ['$rootScope', '$scope', '$routePa
 
             });
 
-        $http.get(api_url + AuthenticationService.organization_id + '/students', {
+        $http.get(api_url + AuthenticationService.organization_id + '/students?assign=true', {
             headers: {
                 'Authorization': 'Bearer ' + AuthenticationService.token
             }
@@ -82,11 +84,10 @@ app.controller('ProgramStudentAddController', ['$rootScope', '$scope', '$routePa
                 $scope.program ? $scope.program.active = true : $scope.program = {
                     active: true
                 };
+                $scope.load_student = false;
             })
             .error(function (response, status) {
-
-                //console.log(response);
-                //console.log(status);
+                $scope.load_student = false;
                 showError(response, 1);
                 $rootScope.doingResolve = false;
                 if (status === 401) {
@@ -97,11 +98,14 @@ app.controller('ProgramStudentAddController', ['$rootScope', '$scope', '$routePa
 
             });
         $scope.addProgramStudent = function (program) {
+
             if (program) {
-                if (program.cohort !== null) {
-                    rawCohart = program.cohort.split(',');
-                } else if (program.cohort === 'undefined' || program.cohort === 'undefined') {
-                    rawCohart = '';
+
+                if(rawCohart === "" || rawCohart === undefined)
+                {
+                    rawCohart = [];
+                }else{
+                    rawCohart = rawCohart.split(',');
                 }
                 program.cohort = rawCohart;
                 $scope.working = true;

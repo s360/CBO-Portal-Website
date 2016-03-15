@@ -1,6 +1,7 @@
 app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 'CookieStore', 'AuthenticationService',
     function ($rootScope, $scope, $http, $location, CookieStore, AuthenticationService, locale) {
         'use strict';
+        $rootScope.sidebarButtonOpen = false;
         var location = window.location.hash;
         if (location.indexOf('login') === -1) {
             $rootScope.show_footer = true;
@@ -8,12 +9,20 @@ app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 
 
 
         $rootScope.full_screen = false;
-        $rootScope.organization_name = CookieStore.get('organization_name');
+
+        if(CookieStore.get('organization_name') !== undefined)
+        {
+            localStorage.setItem('organization_name',CookieStore.get('organization_name'));
+            $rootScope.organization_name = localStorage.getItem("organization_name");
+        }
+
         if (CookieStore.get('role') === 'admin') {
             $rootScope.users_link = true;
+            $rootScope.reports_link = true;
             $rootScope.tags_link = true;
         } else {
             $rootScope.users_link = false;
+            $rootScope.reports_link = false;
             $rootScope.tags_link = false;
         }
         $scope.isActive = function (route) {
@@ -25,8 +34,16 @@ app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 
 
         };
 
+        $scope.checkPath = function(){
+            if($location.path() === '/login'  || $location.path() ==='/forget'){
+                return false;
+            }
+                return true;
+        }
+
 
         $scope.logoutMe = function () {
+
             $rootScope.showFooter = false;
             var logout = {
                 token: AuthenticationService.token
@@ -39,11 +56,11 @@ app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 
 
             })
                 .success(function () {
+                    showError($rootScope.lang.success_logout, 2);
                     $rootScope.showNavBar = true;
                     CookieStore.clearData();
-                    showError($rootScope.lang.success_logout, 2);
                     localStorage.setItem('url_intended','');
-                    //console.log(localStorage);
+                    $("body").css({"padding":"initial"});
                     $location.path("/login");
 
                 })
@@ -51,8 +68,6 @@ app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 
 
                     var myEl = angular.element(document.querySelector('body'));
                     myEl.removeClass('cbp-spmenu-push');
-                    //console.log(response);
-                    //console.log(status);
 
                     CookieStore.clearData();
                     showError($rootScope.lang.success_logout, 2);
@@ -61,6 +76,37 @@ app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 
                 });
 
         };
+
+        //$scope.openSidebar = function(){
+        //    $('#collapse-sidebarmenu').removeClass('glyphicon glyphicon-menu-hamburger');
+        //    $('#collapse-sidebarmenu').addClass('glyphicon glyphicon-remove');
+        //    $('#side-panel').removeClass('hide');
+        //    $('.link-nav').css({
+        //        'display': ''
+        //    });
+        //    $('#border').css({
+        //        'display': ''
+        //    });
+        //    $('#desktop-nav').css({
+        //        'width': '15%'
+        //    });
+        //    $('#desktop-nav').css({
+        //        'position': 'fixed'
+        //    });
+        //    $('#desktop-nav').css({
+        //        'height': '100%'
+        //    });
+        //    $('#collapse-sidebarmenu').removeClass('icon-collapse-menu');
+        //    $('#collapse-sidebarmenu').addClass('icon-sidebarmenu');
+        //    //$('#center-panel').css({
+        //    //    'margin-left': '15%'
+        //    //});
+        //    $('#rootDoc').addClass('center-panel');
+        //    $('#footer').removeClass('hide');
+        //    //$('.confidentiality-footer').css({'margin-left':'15.3%'});
+        //    //$('.version').css({'margin-left':'15.3%'});
+        //    $('#sidebar-open-btn').css({'z-index':'-999'});
+        //}
 
         $scope.refreshMe = function () {
 
@@ -88,10 +134,6 @@ app.controller('BodyController', ['$rootScope', '$scope', '$http', '$location', 
 
                 })
                 .error(function (response) {
-
-                    //console.log('fail');
-                    //console.log(response);
-                    //console.log(status);
 
                     CookieStore.clearData();
                     showError(response.message, 2);
