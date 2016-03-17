@@ -60,6 +60,12 @@ $(document).ready(function () {
     var selected = '#slidemenu, #page-content, body, .navbar, .navbar-header, .navbar-toggle';
     var selected2 = '.navbar-header, #slidemenu, #navbar-height-col, #page-content';
 
+    $(document).on('click.nav','.navbar-collapse.in',function(e) {
+                if( $(e.target).is('a') ) {
+                        $(this).removeClass('in').addClass('collapse');
+                    }
+            });
+
 
     $('.collapse-icon').on("click", function () {
         if (isCollapse === false) {
