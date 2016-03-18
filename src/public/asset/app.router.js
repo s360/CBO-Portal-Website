@@ -64,6 +64,13 @@ app.config(function ($routeProvider) {
                 requiredAuthentication: true
             //}
         }).
+        when('/report', {
+            templateUrl: 'asset/templates/report/index.html',
+            controller: 'ReportController',
+            //access: {
+                requiredAuthentication: true
+            //}
+        }).
         when('/profile/edit', {
             templateUrl: 'asset/templates/profile/edit.html',
             controller: 'ProfileEditController',
@@ -206,11 +213,33 @@ app.config(function ($routeProvider) {
                 requiredAdmin: true
             //}
         }).
+        when('/user/pending', {
+            templateUrl: 'asset/templates/user/pending_list.html',
+            controller: 'UserController',
+            //access: {
+                requiredAuthentication: true,
+                requiredAdmin: true
+            //}
+        }).
         when('/heartbeat', {
             templateUrl: 'asset/templates/heartbeat/list.html',
             controller: 'HeartbeatController',
             //access: {
                 requiredAuthentication: true
+            //}
+        }).
+        when('/applications', {
+            templateUrl: 'asset/templates/user/application.html',
+            controller: 'ApplicationsController',
+            //access: {
+            requiredAuthentication: true
+            //}
+        }).
+        when('/applications/add', {
+            templateUrl: 'asset/templates/user/application_add.html',
+            controller: 'ApplicationsAddController',
+            //access: {
+            requiredAuthentication: true
             //}
         }).
         when('/login', {

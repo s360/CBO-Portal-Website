@@ -1,5 +1,5 @@
-app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
-    function ($rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
+app.controller('LoginController', ['$rollbar','$rootScope', '$scope', '$http', '$location', 'AuthenticationService', 'CookieStore',
+    function ($rollbar,$rootScope, $scope, $http, $location, AuthenticationService, CookieStore) {
         'use strict';
         stop_time_idle();
 
@@ -37,7 +37,6 @@ app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location',
                 }
             })
                 .success(function (response) {
-
                     $http.get(api_url + 'organizations', {
                         headers: {
                             'Authorization': 'Bearer ' + response.access_token
@@ -53,7 +52,8 @@ app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location',
 
 
                             if (responseClient.success === true && responseClient.total > 0) {
-                                $rootScope.organization_name = responseClient.data.name;
+                                $rootScope.organization_name = responseClient.data[0].name;
+                                localStorage.setItem('organization_name',responseClient.data[0].name);
                                 for (var i = 0; i < responseClient.total; i++) {
                                     if (__i || get_hosting_name === responseClient.data[i].url) {
                                         grand_access = true;
@@ -90,20 +90,15 @@ app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location',
                                                         complete_name += data[i].last_name;
                                                     }
 
-                                                    //if (data[i].permissions.length > 0) {
-                                                    //    for (var j = 0; j < data[i].permissions.length; j++) {
-                                                    //        if (data[i].permissions[j].organization == get_id) {
-                                                    //            role = data[i].permissions[j].role;
-                                                    //        }
-                                                    //    }
-                                                    //}
                                                     role = data[i].role;
 
                                                     if (role === 'admin') {
                                                         $rootScope.users_link = true;
+                                                        $rootScope.reports_link = true;
                                                         $rootScope.tags_link = true;
                                                     } else {
                                                         $rootScope.users_link = false;
+                                                        $rootScope.reports_link = false;
                                                         $rootScope.tags_link = false;
                                                     }
                                                     $rootScope.completeName = complete_name;
@@ -125,6 +120,7 @@ app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location',
                                             start_time_idle();
                                             if('intended_url' in localStorage && localStorage.getItem('intended_url')!==''){
                                                 $location.path(localStorage.getItem('intended_url'));
+                                                $rootScope.sidebarButtonOpen = false;
                                             }else {
                                                 $location.path('/');
                                             }
@@ -136,7 +132,6 @@ app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location',
 
                                     })
                                     .error(function (responseUser) {
-
                                         showError(responseUser, 1);
                                         $scope.login.working = false;
 
@@ -149,18 +144,16 @@ app.controller('LoginController', ['$rootScope', '$scope', '$http', '$location',
 
                         })
                         .error(function (responseClient) {
-
-                            showError(responseClient, 1);
+                            //$rollbar.error(responseClient);
+                            //showError("Server error", 1);
                             $scope.login.working = false;
 
                         });
 
                 })
                 .error(function (response) {
-                    //console.log(response);
-                    showError(response.error_description, 1);
+                    //showError("Server error", 1);
                     $scope.login.working = false;
-
                 });
 
         };

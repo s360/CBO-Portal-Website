@@ -1,6 +1,6 @@
 var __i = false; if(typeof __local !== 'undefined') {__i = __local;}
 
-var app = angular.module('CboPortal', ['ui.bootstrap','ui.router','ngLocationUpdate','ngRoute', 'ngCookies', 'ngPrettyJson', 'ui.date', 'anguFixedHeaderTable', 'scrollable-table', 'ngLocalize', 'ui.codemirror',
+var app = angular.module('CboPortal', ['ui.mask','anotherpit/angular-rollbar','ui.bootstrap','ui.router','ngLocationUpdate','ngRoute', 'ngCookies', 'ngPrettyJson', 'ui.date', 'anguFixedHeaderTable', 'scrollable-table', 'ngLocalize', 'ui.codemirror',
     'ngLocalize.Config'
 ]).value('localeConf', {
     basePath: 'languages',
@@ -36,7 +36,16 @@ app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common.Accept = '*/*';
     if (__i){$httpProvider.interceptors.push('headerInjector');}
     $httpProvider.defaults.timeout = 15000;
+    $httpProvider.interceptors.push('httpInterceptor');
 
+}]);
+
+app.config(['$rollbarProvider', function($rollbarProvider) {
+    $rollbarProvider.config.accessToken = '20ac49c365454dd186678ec15b56b13a';
+    $rollbarProvider.config.captureUncaught = true;
+    $rollbarProvider.config.payload = {
+        environment : rollbar_env
+    };
 }]);
 
 app.run(['$window', '$rootScope', '$route',
@@ -45,21 +54,11 @@ function ($window, $rootScope) {
         $rootScope.goBack = function () {
             $window.history.back();
         };
-        $rootScope.data_content = "asset/templates/desktop.html";
-        //var element = angular.element("#login-container");
-        if ($window.innerWidth > 767) {
-            $rootScope.loginClass = "col-md-offset-4 col-md-4 login-page";
-            $rootScope.data_content = "asset/templates/desktop.html";
-        } else if ($window.innerWidth < 767) {
-            $rootScope.loginClass = "col-md-offset-4 col-md-4 login-page-mobile";
-            $rootScope.data_content = "asset/templates/mobile.html";
-        }
+        $rootScope.data_content = "asset/templates/layout.html";
 
 }]);
 
-
-
-app.run(function ($state, $stateParams,$rootScope, $http, $location, $window, AuthenticationService, CookieStore, locale) {
+app.run(function ($timeout,$state, $stateParams,$rootScope, $http, $location, $window, AuthenticationService, CookieStore, locale) {
     'use strict';
     var returnData = CookieStore.getData();
     var checkCookie = CookieStore.checkCookie();
@@ -75,21 +74,33 @@ app.run(function ($state, $stateParams,$rootScope, $http, $location, $window, Au
     $rootScope.$on("$routeChangeStart", function (event, nextRoute) {
         //redirect only if both isAuthenticated is false and no token is set
         $rootScope.doingResolve = true;
+        $rootScope.organization_name = localStorage.getItem('organization_name');
+        $rootScope.sidebarButtonOpen = false;
+
         if (nextRoute !== null && /*nextRoute.access !== null &&  nextRoute.access.requiredAuthentication */nextRoute.requiredAuthentication && !AuthenticationService.isAuthenticated && !$window.sessionStorage.token) {
+            if(nextRoute.originalPath === "/login")
+            {
+
+                return;
+            }
             if(checkCookie === true)
             {
                 $location.path("/loading");
+                $rootScope.sidebarButtonOpen = false;
             }
             else
             {
+                $("#rootDoc").removeClass('center-panel');
                 $location.path("/login");
             }
             $rootScope.showNavBar = false;
+
         }
 
         if (nextRoute !== null && /*nextRoute.access !== null && nextRoute.access.requiredAdmin*/nextRoute.requiredAdmin && (AuthenticationService.role+'').indexOf('case-worker') !== -1) {
             showError($rootScope.lang.you_dont_have_any_permission_page, 1);
             event.preventDefault();
+            $rootScope.doingResolve = false;
         }
 
         if(nextRoute.$$route.originalPath !== '/login' && $rootScope.doingResolve === true){
@@ -101,13 +112,17 @@ app.run(function ($state, $stateParams,$rootScope, $http, $location, $window, Au
             var intended_url = '';
             if(nextRoute.$$route.originalPath === '/login'){
                 $rootScope.is_logged_in = false;
+
+            }
+
+            if(nextRoute.$$route.originalPath === '/loading'){
+                $rootScope.sidebarButtonOpen = false;
             }
 
             if(nextRoute.$$route.originalPath !== '/login' && nextRoute.$$route.originalPath !== '/forget'){
                 $rootScope.is_logged_in = true;
                 $rootScope.showFooter = true;
-
-
+                $rootScope.sidebarButtonOpen = true;
                 intended_url = _.get(nextRoute.$$route, 'originalPath');
                 if(intended_url === '/program/students/:program_id'){
                     intended_url = '/program/students/'+ _.get(nextRoute.params,'program_id');
@@ -145,9 +160,22 @@ app.run(function ($state, $stateParams,$rootScope, $http, $location, $window, Au
                     intended_url = '/user/edit/'+_.get(nextRoute.params,'user_id');
                 }else if(intended_url ==='/user/detail/:user_id'){
                     intended_url = '/user/detail/'+_.get(nextRoute.params,'user_id');
+                }else if(intended_url === '/loading'){
+                    intended_url ='/student';
+                    $rootScope.sidebarButtonOpen = false;
                 }
 
                 localStorage.setItem('intended_url',intended_url);
+            }
+            else if(nextRoute.$$route.originalPath === '/forget'){
+
+                $location.path("/forget");
+                $rootScope.sidebarButtonOpen = false;
+            }
+            else{
+
+                $location.path("/login");
+                $rootScope.sidebarButtonOpen = false;
             }
 
         }
@@ -155,6 +183,7 @@ app.run(function ($state, $stateParams,$rootScope, $http, $location, $window, Au
             start_time_idle();
         }
         if($location.$$path === '/login'){
+
             $rootScope.showNavBar = false;
         }
     });
@@ -178,31 +207,59 @@ app.run(['$route', '$rootScope', '$location', function ($route, $rootScope, $loc
     };
 }]);
 
-//app.run([
-//    'myGoogleAnalytics',
-//    function (myGoogleAnalytics) {
-//            // inject self
-//    }
-//  ]);
 
 function showError(message, alert) {
     'use strict';
-    var passingClass = 'alert-danger';
-    if (alert === 2) {
-        passingClass = 'alert-success';
+    var passingClass = 'alert-danger error-color';
+    var messages = "";
+    var sidebar_width = $("nav.navbar").width();
+    if(message != null){
+        if(message.indexOf("updateNow") > -1){
+            message_alert = message;
+        }else{
+            if (alert === 2) {
+                passingClass = 'alert-success';
+            }
+            if(_.has(message,'error')){
+                if(_.has(message.error,'message'))
+                {
+                    messages = message.error.message;
+                }
+                else
+                {
+                    messages = message.error;
+                }
+
+            }else if(_.has(message,'message'))
+            {
+                messages = message.message;
+            }
+            else{
+                messages = message;
+            }
+            var message_alert = '<div style="margin-left:'+sidebar_width+'px" class="alert ' + passingClass + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + messages + '</div>';
+        }
+    }else{
+
+        message = "Unknown error has occured";
+
     }
-    var message_alert = '<div class="alert ' + passingClass + ' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' + message + '</div>';
+
     if(message !== null) {
         if (window.location.href.indexOf('/login') === -1) {
-            jQuery(".error-container.visible-on").append(message_alert);
+            jQuery(".error-container").empty().append(message_alert);
             setTimeout(function () {
                 jQuery('.alert').remove();
-            }, 3000);
+            }, 9000);
         } else {
-            jQuery("#login-error-message").append(message_alert);
+            jQuery(".error-container").empty().append(message_alert);
             setTimeout(function () {
                 jQuery('.alert').remove();
-            }, 3000);
+            }, 9000);
+            //jQuery("#login-error-message").empty().append(message_alert);
+            //setTimeout(function () {
+            //   jQuery('.alert').remove();
+            //}, 9000);
         }
     }
 }
